@@ -4,7 +4,7 @@
 
 ## On-Chain (Solana Program / Anchor)
 
-### Core Features (Completed)
+### ✅ Core Features - Completed
 
 ### `set_withdrawal_recipient` Instruction (Optional)
 
@@ -33,7 +33,7 @@
 
 ---
 
-## Tests (Solana-Bankrun / Mocha / Anchor)
+## ✅ Tests (Solana-Bankrun / Mocha / Anchor) - Completed
 
 1. Write and maintain test coverage for all instructions:
    - `set_withdrawal_recipient`
