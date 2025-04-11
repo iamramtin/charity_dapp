@@ -32,6 +32,12 @@ pub mod charity {
             withdrawn_at: None,
         };
 
+        // Ensure the vault PDA is owned by the program
+        require!(
+            ctx.accounts.vault.owner == ctx.program_id,
+            ErrorCode::Unauthorized
+        );
+
         emit!(CreateCharityEvent {
             charity_key: ctx.accounts.charity.key(),
             name: ctx.accounts.charity.name.clone(),
@@ -264,6 +270,9 @@ pub struct CreateCharity<'info> {
     /// Safety:
     /// - This vault must be verified by seeds in the program logic
     #[account(
+        init,
+        payer = authority,
+        space = 0, // No data, just holds lamports
         seeds = [b"vault", charity.key().as_ref()],
         bump
     )]
