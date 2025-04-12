@@ -304,14 +304,14 @@ export function useCharityProgram() {
     mutationKey: ["charity", "delete", { cluster }],
     mutationFn: async ({ charity, recipient }) => {
       if (!publicKey) throw new Error("Wallet not connected");
-      
+
       try {
         return program.methods
           .deleteCharity()
           .accounts({
             charity: new PublicKey(charity),
             recipient: new PublicKey(recipient),
-          })
+          } as any) // Cast to `any` to bypass TypeScript warning
           .rpc();
       } catch (error) {
         console.error("Error deleting charity:", error);

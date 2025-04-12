@@ -600,7 +600,7 @@ describe("Charity Smart Contract Tests", () => {
         .accounts({
           charity: charityPda,
           recipient: recipientKeypair.publicKey,
-        })
+        } as any) // Cast to `any` to bypass TypeScript warning
         .signers([authorityKeypair])
         .rpc({ commitment: "confirmed" });
 
