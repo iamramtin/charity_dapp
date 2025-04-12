@@ -17,6 +17,16 @@ pub mod charity {
         name: String,
         description: String,
     ) -> Result<()> {
+        // Validate input lengths
+        require!(
+            name.len() <= CHARITY_NAME_MAX_LEN,
+            ErrorCode::InvalidNameLength
+        );
+        require!(
+            description.len() <= CHARITY_DESCRIPTION_MAX_LEN,
+            ErrorCode::InvalidDescriptionLength
+        );
+
         let current_time = Clock::get()?.unix_timestamp;
 
         *ctx.accounts.charity = Charity {
@@ -24,12 +34,13 @@ pub mod charity {
             name,
             description,
             donations_in_lamports: 0,
-            vault_bump: ctx.bumps.vault,
             donation_count: 0,
+            paused: false,
             created_at: current_time,
             updated_at: current_time,
             deleted_at: None,
             withdrawn_at: None,
+            vault_bump: ctx.bumps.vault,
         };
 
         // Ensure the vault PDA is owned by the program
@@ -40,7 +51,7 @@ pub mod charity {
 
         emit!(CreateCharityEvent {
             charity_key: ctx.accounts.charity.key(),
-            name: ctx.accounts.charity.name.clone(),
+            charity_name: ctx.accounts.charity.name.clone(),
             description: ctx.accounts.charity.description.clone(),
             created_at: current_time,
         });
@@ -58,7 +69,7 @@ pub mod charity {
         );
 
         require!(
-            description.len() <= 100,
+            description.len() <= CHARITY_DESCRIPTION_MAX_LEN,
             ErrorCode::InvalidDescriptionLength
         );
 
@@ -67,7 +78,7 @@ pub mod charity {
 
         emit!(UpdateCharityEvent {
             charity_key: charity.key(),
-            name: charity.name.clone(),
+            charity_name: charity.name.clone(),
             description: charity.description.clone(),
             updated_at: current_time,
         });
@@ -112,9 +123,26 @@ pub mod charity {
 
         emit!(DeleteCharityEvent {
             charity_key: charity.key(),
-            name: charity.name.clone(),
+            charity_name: charity.name.clone(),
             deleted_at: current_time,
             withdrawn_to_recipient, // Emit the withdrawal destination
+        });
+
+        Ok(())
+    }
+
+    pub fn pause_donations(ctx: Context<PauseDonations>, paused: bool) -> Result<()> {
+        let charity = &mut ctx.accounts.charity;
+        let current_time = Clock::get()?.unix_timestamp;
+
+        charity.paused = paused;
+        charity.updated_at = current_time;
+
+        emit!(PauseDonationsEvent {
+            charity_key: charity.key(),
+            charity_name: charity.name.clone(),
+            paused,
+            updated_at: current_time,
         });
 
         Ok(())
@@ -127,6 +155,9 @@ pub mod charity {
         let donation = &mut ctx.accounts.donation;
         let current_time = Clock::get()?.unix_timestamp;
 
+        // Check that donations are not paused
+        require!(!charity.paused, ErrorCode::DonationsPaused);
+
         let (expected_vault, _vault_bump) =
             Pubkey::find_program_address(&[b"vault", charity.key().as_ref()], ctx.program_id);
         require_keys_eq!(vault.key(), expected_vault, ErrorCode::InvalidVaultAccount);
@@ -134,14 +165,13 @@ pub mod charity {
         // Create the transfer instruction from donor to vault PDA
         let transfer_instruction = system_instruction::transfer(donor.key, vault.key, amount);
 
-        anchor_lang::solana_program::program::invoke_signed(
+        anchor_lang::solana_program::program::invoke(
             &transfer_instruction,
             &[
                 donor.to_account_info(),
                 vault.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
             ],
-            &[],
         )?;
 
         // Update charity state
@@ -219,7 +249,7 @@ pub mod charity {
 
         emit!(WithdrawCharitySolEvent {
             charity_key: charity.key(),
-            name: charity.name.clone(),
+            charity_name: charity.name.clone(),
             donations_in_lamports: charity.donations_in_lamports,
             donation_count: charity.donation_count,
             withdrawn_at: current_time,
@@ -332,6 +362,21 @@ pub struct DeleteCharity<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(paused: bool)]
+pub struct PauseDonations<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"charity", authority.key().as_ref(), charity.name.as_bytes()],
+        bump,
+        has_one = authority,
+    )]
+    pub charity: Account<'info, Charity>,
+}
+
+#[derive(Accounts)]
 pub struct DonateSol<'info> {
     #[account(mut)]
     pub donor: Signer<'info>,
@@ -398,17 +443,18 @@ pub struct WithdrawDonations<'info> {
 #[derive(InitSpace, Debug)]
 pub struct Charity {
     pub authority: Pubkey, // Wallet controlling the charity
-    #[max_len(30)]
+    #[max_len(CHARITY_NAME_MAX_LEN)]
     pub name: String, // Charity name
-    #[max_len(100)]
+    #[max_len(CHARITY_DESCRIPTION_MAX_LEN)]
     pub description: String, // Description of charity
     pub donations_in_lamports: u64, // Running total of SOL donated (in lamports)
-    pub vault_bump: u8,    // Reference to associated vault PDA
     pub donation_count: u64, // Number of donations received
+    pub paused: bool,      // Reject donations in paused
     pub created_at: i64,   // When charity was created
     pub updated_at: i64,   // When charity was updated
     pub deleted_at: Option<i64>, // When charity was deleted
     pub withdrawn_at: Option<i64>, // When donations were withdrawn
+    pub vault_bump: u8,    // Reference to associated vault PDA
 }
 
 #[account]
@@ -416,7 +462,7 @@ pub struct Charity {
 pub struct Donation {
     pub donor_key: Pubkey,   // Key of wallet that made the donation
     pub charity_key: Pubkey, // Key of charity that received the donation
-    #[max_len(30)]
+    #[max_len(CHARITY_NAME_MAX_LEN)]
     pub charity_name: String, // Name of charity that received the donation
     pub amount_in_lamports: u64, // Amount of SOL donated amount (in lamports)
     pub created_at: i64,     // When donation was made
@@ -427,20 +473,32 @@ pub struct Donation {
  */
 #[error_code]
 pub enum ErrorCode {
-    #[msg("Math overflow occurred")]
-    Overflow,
-    #[msg("Insufficient funds for withdrawal")]
-    InsufficientFunds,
-    #[msg("Cannot withdraw below rent-exemption threshold")]
-    InsufficientFundsForRent,
     #[msg("Unauthorized access")]
     Unauthorized,
+
+    #[msg("Math overflow occurred")]
+    Overflow,
+
+    #[msg("Insufficient funds for withdrawal")]
+    InsufficientFunds,
+
+    #[msg("Cannot withdraw below rent-exemption threshold")]
+    InsufficientFundsForRent,
+
     #[msg("Invalid description")]
     InvalidDescription,
+
     #[msg("Invalid description length")]
     InvalidDescriptionLength,
+
+    #[msg("Invalid name length")]
+    InvalidNameLength,
+
     #[msg("Invalid vault account")]
     InvalidVaultAccount,
+
+    #[msg("Donations for this charity are paused")]
+    DonationsPaused,
 }
 
 /**
@@ -449,7 +507,7 @@ pub enum ErrorCode {
 #[event]
 pub struct CreateCharityEvent {
     pub charity_key: Pubkey,
-    pub name: String,
+    pub charity_name: String,
     pub description: String,
     pub created_at: i64,
 }
@@ -457,7 +515,7 @@ pub struct CreateCharityEvent {
 #[event]
 pub struct UpdateCharityEvent {
     pub charity_key: Pubkey,
-    pub name: String,
+    pub charity_name: String,
     pub description: String,
     pub updated_at: i64,
 }
@@ -465,7 +523,7 @@ pub struct UpdateCharityEvent {
 #[event]
 pub struct DeleteCharityEvent {
     pub charity_key: Pubkey,
-    pub name: String,
+    pub charity_name: String,
     pub deleted_at: i64,
     pub withdrawn_to_recipient: bool,
 }
@@ -473,10 +531,18 @@ pub struct DeleteCharityEvent {
 #[event]
 pub struct WithdrawCharitySolEvent {
     pub charity_key: Pubkey,
-    pub name: String,
+    pub charity_name: String,
     pub donations_in_lamports: u64,
     pub donation_count: u64,
     pub withdrawn_at: i64,
+}
+
+#[event]
+pub struct PauseDonationsEvent {
+    pub charity_key: Pubkey,
+    pub charity_name: String,
+    pub paused: bool,
+    pub updated_at: i64,
 }
 
 #[event]

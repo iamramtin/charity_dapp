@@ -47,14 +47,14 @@ describe("Charity Smart Contract Tests", () => {
   let rentExemptBalance: number;
 
   beforeAll(async () => {
+    const programId = new PublicKey(IDL.address);
+
     // Get the minimum rent for this account
     connection = new anchor.web3.Connection(
       "http://localhost:8899",
       "confirmed"
     );
     rentExemptBalance = await connection.getMinimumBalanceForRentExemption(0); // 0 bytes for data
-
-    const programId = new PublicKey(IDL.address);
 
     // Initialize the test context with the charity program and pre-fund the donor account
     context = await startAnchor(
@@ -352,6 +352,70 @@ describe("Charity Smart Contract Tests", () => {
     }
   });
 
+  it("pauses and unpauses donations to charity", async () => {
+    try {
+      // First pause donations
+      await charityProgram.methods
+        .pauseDonations(true)
+        .accounts({
+          authority: authorityKeypair.publicKey,
+          charity: charityPda,
+        })
+        .rpc({ commitment: "confirmed" });
+
+      // Verify charity is paused
+      let charity = await charityProgram.account.charity.fetch(charityPda);
+      expect(charity.paused).toBe(true);
+
+      // Try to donate while paused - should fail
+      try {
+        await donorProgram.methods
+          .donateSol(new anchor.BN(100_000))
+          .accounts({
+            donor: donorKeypair.publicKey,
+            charity: charityPda,
+          })
+          .signers([donorKeypair])
+          .rpc({ commitment: "confirmed" });
+
+        throw new Error("Donation should have failed when charity is paused");
+      } catch (error: any) {
+        expect(error.message).toContain("DonationsPaused");
+      }
+
+      // Now unpause donations
+      await charityProgram.methods
+        .pauseDonations(false)
+        .accounts({
+          authority: authorityKeypair.publicKey,
+          charity: charityPda,
+        })
+        .rpc({ commitment: "confirmed" });
+
+      // Verify charity is unpaused
+      charity = await charityProgram.account.charity.fetch(charityPda);
+      expect(charity.paused).toBe(false);
+
+      // Try to donate after unpausing - should succeed
+      await donorProgram.methods
+        .donateSol(new anchor.BN(100_000))
+        .accounts({
+          donor: donorKeypair.publicKey,
+          charity: charityPda,
+        })
+        .signers([donorKeypair])
+        .rpc({ commitment: "confirmed" });
+
+      // Verify donation succeeded
+      charity = await charityProgram.account.charity.fetch(charityPda);
+      expect(charity.donationsInLamports.toNumber()).toBeGreaterThan(0);
+    } catch (error: any) {
+      const message = `Pause/unpause test failed: ${error}`;
+      console.error(message);
+      throw new Error(message);
+    }
+  });
+
   it("withdraws donations from vault", async () => {
     try {
       // Set the clock to simulate blockchain time
@@ -366,23 +430,26 @@ describe("Charity Smart Contract Tests", () => {
         )
       );
 
-      // Get charity before withdrawal
+      // Get the current state
       const charityBefore = await charityProgram.account.charity.fetch(
         charityPda
       );
+      const vaultAccountBefore = await context.banksClient.getAccount(vaultPda);
+      const vaultBalanceBefore = vaultAccountBefore?.lamports || 0;
+
+      console.log("Vault balance before withdrawal:", vaultBalanceBefore);
+      console.log(
+        "Charity donations in lamports:",
+        charityBefore.donationsInLamports.toString()
+      );
+      console.log("Rent exempt minimum:", rentExemptBalance);
 
       const recipientKeypair = Keypair.generate();
 
-      // Assertions for vault account
-      const vaultAccount = await context.banksClient.getAccount(vaultPda);
-      const vaultBalance = vaultAccount?.lamports;
-      const expectedVaultBalance = validDonationAmount
-        .add(new anchor.BN(rentExemptBalance))
-        .toNumber();
-      expect(vaultAccount?.owner.toString()).toBe(
+      // Verify vault ownership
+      expect(vaultAccountBefore?.owner.toString()).toBe(
         charityProgram.programId.toString()
       );
-      expect(vaultBalance).toBe(expectedVaultBalance);
 
       const tx = await charityProgram.methods
         .withdrawDonations(validWithdrawAmount)
@@ -399,12 +466,21 @@ describe("Charity Smart Contract Tests", () => {
         charityPda
       );
 
+      // Check vault balance after withdrawal
+      const vaultAccountAfter = await context.banksClient.getAccount(vaultPda);
+      const vaultBalanceAfter = vaultAccountAfter?.lamports || 0;
+
+      console.log("Vault balance after withdrawal:", vaultBalanceAfter);
+
       // Check recipient balance
       const recipientAccount = await context.banksClient.getAccount(
         recipientKeypair.publicKey
       );
 
-      // Assertions
+      // Assertions - use difference in balances instead of absolute values
+      expect(vaultBalanceBefore - vaultBalanceAfter).toBe(
+        validWithdrawAmount.toNumber()
+      );
       expect(updatedCharity.donationsInLamports.toString()).toBe(
         charityBefore.donationsInLamports.sub(validWithdrawAmount).toString()
       );
