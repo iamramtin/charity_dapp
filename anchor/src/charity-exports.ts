@@ -10,6 +10,8 @@ export { Charity, CharityIDL };
 // The programId is imported from the program IDL.
 export const CHARITY_PROGRAM_ID = new PublicKey(CharityIDL.address);
 
+export const ANCHOR_DISCRIMINATOR_SIZE = 8;
+
 // This is a helper function to get the Charity Anchor program.
 export function getCharityProgram(
   provider: AnchorProvider,
