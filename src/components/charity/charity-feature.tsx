@@ -11,7 +11,19 @@ export default function CharityFeature() {
   const { publicKey } = useWallet();
   const { programId } = useCharityProgram();
 
-  return publicKey ? (
+  if (!publicKey) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="alert alert-info mt-4">
+          <div>
+            <span>Connect your wallet to manage vesting accounts</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
     <div>
       <AppHero
         title="Charity"
@@ -28,14 +40,6 @@ export default function CharityFeature() {
         <CharityCreate />
       </AppHero>
       <CharityList />
-    </div>
-  ) : (
-    <div className="max-w-4xl mx-auto">
-      <div className="hero py-[64px]">
-        <div className="hero-content text-center">
-          <WalletButton />
-        </div>
-      </div>
     </div>
   );
 }
