@@ -1,7 +1,7 @@
 "use client";
 
 import { getCharityProgram, getCharityProgramId } from "@project/anchor";
-import { useConnection } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Cluster, Keypair, PublicKey } from "@solana/web3.js";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -10,9 +10,14 @@ import { useCluster } from "../cluster/cluster-data-access";
 import { useAnchorProvider } from "../solana/solana-provider";
 import { useTransactionToast } from "../ui/ui-layout";
 
+interface CreateCharityArgs {
+  name: string,
+  description: string,
+}
 export function useCharityProgram() {
   const { connection } = useConnection();
   const { cluster } = useCluster();
+  const { publicKey } = useWallet();
   const transactionToast = useTransactionToast();
   const provider = useAnchorProvider();
   const programId = useMemo(
@@ -34,14 +39,14 @@ export function useCharityProgram() {
     queryFn: () => connection.getParsedAccountInfo(programId),
   });
 
-  const initialize = useMutation({
-    mutationKey: ["charity", "initialize", { cluster }],
-    mutationFn: (keypair: Keypair) =>
-      program.methods
-        .initialize()
-        .accounts({ charity: keypair.publicKey })
-        .signers([keypair])
-        .rpc(),
+  const createCharity = useMutation<string, Error, CreateCharityArgs>({
+    mutationKey: ["charity", "create", { cluster }],
+    mutationFn: async ({ name, description }) => {
+
+      return program.methods
+        .createCharity(name, description)
+        .rpc();
+    },
     onSuccess: (signature) => {
       transactionToast(signature);
       return accounts.refetch();
@@ -54,7 +59,7 @@ export function useCharityProgram() {
     programId,
     accounts,
     getProgramAccount,
-    initialize,
+    createCharity,
   };
 }
 
@@ -68,18 +73,8 @@ export function useCharityProgramAccount({ account }: { account: PublicKey }) {
     queryFn: () => program.account.charity.fetch(account),
   });
 
-  const closeMutation = useMutation({
-    mutationKey: ["charity", "close", { cluster, account }],
-    mutationFn: () =>
-      program.methods.close().accounts({ charity: account }).rpc(),
-    onSuccess: (tx) => {
-      transactionToast(tx);
-      return accounts.refetch();
-    },
-  });
-
   return {
     accountQuery,
-    closeMutation,
+
   };
 }
