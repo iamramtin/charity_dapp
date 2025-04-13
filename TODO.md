@@ -88,45 +88,69 @@
 1. Write and maintain test coverage for all instructions:
    - `set_withdrawal_recipient`
    - `pause_donations` / `unpause_donations`
-   - SOL and USDC donation flows
+   - SOL donation flows
    - Withdrawals with and without recipient override
 2. Include edge cases and error scenarios.
 
 ---
 
-## Off-Chain Handlers (Anchor + TypeScript)
+## Off-Chain Handlers (Anchor + TypeScript) - Completed
 
-### Implement Anchor Instructions (Stub + Client Fetch)
+### ✅ Add Hooks for Core Functionality (Data Access Layer)
 
-1. Create stub instructions in the program for consistency:
-   - `get_charities`: Return a list of all `Charity` accounts.
-   - `get_charity_donations`: Return donations for a given charity.
-   - `get_donor_donations`: Return donations made by a specific donor.
-2. Implement client-side logic to fetch and resolve these accounts.
+✅ 1. Implemented functions in the data access layer:
+
+- ✅ `getAllCharities`: Fetch all `Charity` accounts.
+- ✅ `getMyCharities`: Fetch charities owned by the current user.
+- ✅ `getMyDonations`: Fetch donations made by the current user.
+- ✅ `createCharity`: Create a new charity account.
+- ✅ `updateCharity`: Update details of an existing charity.
+- ✅ `donate`: Donate to a charity.
+- ✅ `pauseDonations`: Pause donations for a charity.
+- ✅ `withdrawDonations`: Withdraw donations from a charity.
+- ✅ `deleteCharity`: Delete a charity account.
+- ✅ `useCharityAccount`: Hook to fetch and manage a specific charity account.
+- ✅ `useDonationAccount`: Hook to fetch and manage donation accounts.
+- ✅ `useCharityStats`: Hook to fetch and manage charity statistics.
+
+✅ 2. Ensure all functions and hooks handle loading, error states, and caching efficiently.
 
 ---
 
-## Frontend (React)
+## Frontend (React) - In Progress
 
-### Charity Detail Page
+### Charity Management
 
-1. Display charity information:
-   - `name`, `authority`, `paused` status, donation stats
-   - Recipient wallet (if set)
-2. Add action buttons:
-   - Pause / Unpause donations
-   - Set withdrawal recipient
+1. Use `useCharityAccount` to display charity details:
+   - `name`, `authority`, `paused` status, donation stats, recipient wallet (if set).
+2. Add action buttons for:
+   - Pause / Unpause donations (`pauseDonations`).
+   - Set withdrawal recipient (`updateCharity`).
 
 ### Donation Flow
 
-1. Allow toggling between SOL and USDC.
+1. Use `donate` to handle SOL.
 2. Validate input amount and token type.
 3. Display paused state and disable donation if applicable.
 
 ### Withdraw Flow (For Authority)
 
-1. Create a form to withdraw to either self or the custom recipient.
-2. Show available balances for both SOL and USDC.
+1. Use `withdrawDonations` to withdraw funds to self or a custom recipient.
+2. Display available balances for both SOL.
+
+### Charity Listings
+
+1. Use `getAllCharities` to fetch and display all charities.
+2. Use `getMyCharities` to fetch and display charities owned by the current user.
+
+### Donation History
+
+1. Use `getMyDonations` to display the user's donation history.
+2. Use `useDonationAccount` to fetch and manage donation-specific data.
+
+### Statistics and Insights
+
+1. Use `useCharityStats` to display donation statistics and trends for charities.
 
 ---
 
