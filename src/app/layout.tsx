@@ -1,21 +1,24 @@
-import './globals.css'
-import { ClusterProvider } from '@/components/cluster/cluster-data-access'
-import { SolanaProvider } from '@/components/solana/solana-provider'
-import { UiLayout } from '@/components/ui/ui-layout'
-import { ReactQueryProvider } from './react-query-provider'
+import "./globals.css";
+import { ClusterProvider } from "@/components/cluster/cluster-data-access";
+import { SolanaProvider } from "@/components/solana/solana-provider";
+import { UiLayout } from "@/components/ui/ui-layout";
+import { ReactQueryProvider } from "./react-query-provider";
 
 export const metadata = {
-  title: 'Charity DApp',
-  description: 'A decentralized application for charity on Solana',
-}
+  title: "Charity DApp",
+  description: "A decentralized application for charity on Solana",
+};
 
 const links: { label: string; path: string }[] = [
-  { label: 'Charity', path: '/' },
-  { label: 'Account', path: '/account' },
-  { label: 'Clusters', path: '/clusters' },
-]
+  { label: "Account", path: "/account" },
+  { label: "Clusters", path: "/clusters" },
+];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>
@@ -28,5 +31,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </ReactQueryProvider>
       </body>
     </html>
-  )
+  );
 }

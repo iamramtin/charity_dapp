@@ -1,5 +1,5 @@
-import CharityFeature from "@/components/charity/charity-feature";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  return <CharityFeature />;
+export default function Home() {
+  redirect("/charity");
 }
