@@ -207,8 +207,13 @@ pub mod charity {
         let charity = &mut ctx.accounts.charity;
         let vault = &mut ctx.accounts.vault;
         let current_time = Clock::get()?.unix_timestamp;
-        let recipient_pubkey = charity.withdrawal_recipient.unwrap_or(charity.authority);
-        require_keys_eq!(recipient.key(), recipient_pubkey, ErrorCode::Unauthorized);
+        let recipient = &mut ctx.accounts.recipient;
+        let authority = &ctx.accounts.authority;
+        let withdrawal_recipient = match charity.withdrawal_recipient {
+          Some(recipient_key) => recipient_key,
+          None => authority.key(),
+      };
+        require_keys_eq!(recipient.key(), withdrawal_recipient, ErrorCode::Unauthorized);
 
         let (expected_vault, _vault_bump) =
             Pubkey::find_program_address(&[b"vault", charity.key().as_ref()], ctx.program_id);
@@ -449,13 +454,8 @@ pub struct WithdrawDonations<'info> {
     /// CHECK: Safe because it's a PDA with known seeds and only receives SOL via system program
     pub vault: UncheckedAccount<'info>,
 
-    /// Destination account that will receive the withdrawn SOL
-    /// Allows the charity authority to send funds to a different address than their own
-    /// Why `UncheckedAccount`:
-    /// - We're only transferring SOL (no deserialization required)
-    /// - We're not enforcing any constraints on it through Anchor's account validation
     #[account(mut)]
-    /// CHECK: Safe because it's a PDA with known seeds and only receives SOL via system program
+    /// CHECK: Safe because it's a recipient account for withdrawal
     pub recipient: UncheckedAccount<'info>,
 
     pub system_program: Program<'info, System>,
