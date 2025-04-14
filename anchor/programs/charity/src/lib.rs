@@ -258,8 +258,6 @@ pub mod charity {
         // let vault_seeds: &[&[&[u8]]] = &[&[b"vault", seed.as_ref(), &[ctx.bumps.vault]]];
         // invoke_signed(ix, &[from_vault_pubkey, to_recipient_pubkey, program_id], vault_seeds)?;
 
-
-
         emit!(WithdrawCharitySolEvent {
             charity_key: charity.key(),
             charity_name: charity.name.clone(),
