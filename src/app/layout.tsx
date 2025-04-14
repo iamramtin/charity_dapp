@@ -5,7 +5,7 @@ import { UiLayout } from "@/components/ui/ui-layout";
 import { ReactQueryProvider } from "./react-query-provider";
 
 export const metadata = {
-  title: "Charity DApp",
+  title: "Solana Charity Platform",
   description: "A decentralized application for charity on Solana",
 };
 
