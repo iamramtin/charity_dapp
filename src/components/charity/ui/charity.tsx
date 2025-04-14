@@ -309,7 +309,7 @@ export function CharitySummary({
 }) {
   return (
     <div
-      className={`border rounded-xl p-5 mb-5 bg-white shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ${
+      className={`border rounded-md ml-4 mr-4 p-5 mb-5 bg-white shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ${
         onClick ? "cursor-pointer" : ""
       }`}
       onClick={onClick}

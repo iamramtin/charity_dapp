@@ -74,6 +74,7 @@ export function useCharityProgram() {
       try {
         const accounts = await program.account.charity.all();
         return accounts.map((account) => ({
+          publicKey: account.publicKey,
           ...account.account,
         }));
       } catch (error) {
@@ -120,13 +121,15 @@ export function useCharityProgram() {
   const getMyDonations = useQuery({
     queryKey: [
       "donation",
-      "myCharities",
+      "myDonations",
       { cluster, publicKey: publicKey?.toString() },
     ],
     queryFn: async () => {
       if (!publicKey) return [];
 
       try {
+        console.log("Fetching donations for wallet:", publicKey.toString());
+
         // Fetch all donation accounts where donorKey = publicKey
         const accounts = await program.account.donation.all([
           {
@@ -137,12 +140,19 @@ export function useCharityProgram() {
           },
         ]);
 
+        console.log("Raw donation accounts:", accounts);
+
+        if (accounts.length === 0) {
+          console.log("No donations found for this wallet");
+        }
+
         return accounts.map((account) => ({
           publicKey: account.publicKey,
           ...account.account,
         }));
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching my donations:", error);
+        console.error("Error details:", error.message, error.stack);
         return [];
       }
     },
