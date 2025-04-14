@@ -1,6 +1,6 @@
 # Team To-Do List
 
-## On-Chain (Solana Program / Anchor)
+## ✅ Main On-Chain (Solana Program / Anchor)
 
 ### ✅ `create_charity` Instruction
 
@@ -28,14 +28,7 @@
 
 1. Allow the authority to withdraw donations from the charity account.
 
-### `set_withdrawal_recipient` Instruction (Optional)
-
-1. Add `pub withdrawal_recipient: Option<Pubkey>` to the `Charity` account.
-2. Implement the `set_withdrawal_recipient()` instruction:
-   - Allow the charity to set or update the withdrawal recipient address.
-   - Require authority signature for updates.
-3. Update `withdraw_donations()`:
-   - Use `withdrawal_recipient` if set; fallback to the original authority otherwise.
+## Additional On-Chain (Solana Program / Anchor)
 
 ### ✅ `pause_donations` Instruction (Optional) - Completed
 
@@ -45,6 +38,15 @@
    - `unpause_donations()`: Set `paused` to `false`.
 3. Update `donate()`:
    - Reject donations if the charity is paused.
+
+### `set_withdrawal_recipient` Instruction (Optional)
+
+1. Add `pub withdrawal_recipient: Option<Pubkey>` to the `Charity` account.
+2. Implement the `set_withdrawal_recipient()` instruction:
+   - Allow the charity to set or update the withdrawal recipient address.
+   - Require authority signature for updates.
+3. Update `withdraw_donations()`:
+   - Use `withdrawal_recipient` if set; fallback to the original authority otherwise.
 
 ### USDC Support (Optional)
 
@@ -86,11 +88,11 @@
 
 ---
 
-## Off-Chain Handlers (Anchor + TypeScript) - Completed
+## ✅ Off-Chain Handlers (Anchor + TypeScript) - Completed
 
 ### ✅ Add Hooks for Core Functionality (Data Access Layer)
 
-✅ 1. Implemented functions in the data access layer:
+✅ 1. Implement functions in the data access layer:
 
 - ✅ `getAllCharities`: Fetch all `Charity` accounts.
 - ✅ `getMyCharities`: Fetch charities owned by the current user.
@@ -107,7 +109,7 @@
 
 ---
 
-## Frontend (React) - In Progress
+## ✅ Frontend (React) - In Progress
 
 ### ✅ Charity Management
 
@@ -115,7 +117,6 @@
    - `name`, `authority`, `paused` status, donation stats, recipient wallet (if set).
 2. ✅ Add action buttons for:
    - Pause / Unpause donations (`pauseDonations`).
-   - Set withdrawal recipient (`updateCharity`).
 
 ### ✅ Donation Flow
 
@@ -123,10 +124,10 @@
 2. ✅ Validate input amount and token type.
 3. ✅ Display paused state and disable donation if applicable.
 
-### Withdraw Flow (For Authority)
+### ✅ Withdraw Flow (For Authority)
 
-1. Use `withdrawDonations` to withdraw funds to self or a custom recipient.
-2. Display available balances for both SOL.
+1. ✅ Use `withdrawDonations` to withdraw funds to self or a custom recipient.
+2. ✅ Display available balances for both SOL.
 
 ### ✅ Charity Listings
 
