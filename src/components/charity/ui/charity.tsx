@@ -481,7 +481,7 @@ export function CharityDetails({
             {showWithdrawForm ? (
               <div className="mt-2">
                 <WithdrawForm
-                  charity={charity.publicKey.toString()}
+                  charity={charity?.publicKey?.toString()}
                   vaultBalance={vaultBalance || 0}
                   onSubmit={onWithdraw}
                 />

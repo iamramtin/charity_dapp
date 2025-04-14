@@ -18,7 +18,11 @@ import {
   DeleteCharityArgs,
   UpdateCharityArgs,
 } from "../types/charity-types";
-import { DonateArgs, PauseDonationsArgs, WithdrawDonationsArgs } from "../types/donation-types";
+import {
+  DonateArgs,
+  PauseDonationsArgs,
+  WithdrawDonationsArgs,
+} from "../types/donation-types";
 
 export const findCharityPda = (
   name: string,
@@ -70,7 +74,6 @@ export function useCharityProgram() {
       try {
         const accounts = await program.account.charity.all();
         return accounts.map((account) => ({
-          publicKey: account.publicKey,
           ...account.account,
         }));
       } catch (error) {

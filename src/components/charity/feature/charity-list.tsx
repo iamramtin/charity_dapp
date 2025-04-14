@@ -170,7 +170,7 @@ export function CharityListFeature() {
         <div>
           {charities.map((charity) => (
             <CharitySummary
-              key={charity.publicKey.toString()}
+              key={charity?.publicKey?.toString()}
               charity={charity}
               isAuthority={activeTab === "myCharities"}
               onClick={() => navigateToCharity(charity.publicKey)}
