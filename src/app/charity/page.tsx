@@ -1,7 +1,7 @@
 "use client";
 
+import { CharityListFeature } from "@/components/charity/feature/charity-list";
 import { Suspense } from "react";
-import { CharityListFeature } from "@/components/charity/charity-feature";
 
 export default function CharitiesPage() {
   return (

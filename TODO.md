@@ -1,7 +1,5 @@
 # Team To-Do List
 
----
-
 ## On-Chain (Solana Program / Anchor)
 
 ### ✅ `create_charity` Instruction
@@ -119,11 +117,11 @@
 
 ## Frontend (React) - In Progress
 
-### Charity Management
+### ✅ Charity Management
 
-1. Use `useCharityAccount` to display charity details:
+1. ✅ Use `useCharityAccount` to display charity details:
    - `name`, `authority`, `paused` status, donation stats, recipient wallet (if set).
-2. Add action buttons for:
+2. ✅ Add action buttons for:
    - Pause / Unpause donations (`pauseDonations`).
    - Set withdrawal recipient (`updateCharity`).
 
@@ -138,10 +136,10 @@
 1. Use `withdrawDonations` to withdraw funds to self or a custom recipient.
 2. Display available balances for both SOL.
 
-### Charity Listings
+### ✅ Charity Listings
 
-1. Use `getAllCharities` to fetch and display all charities.
-2. Use `getMyCharities` to fetch and display charities owned by the current user.
+1. ✅ Use `getAllCharities` to fetch and display all charities.
+2. ✅ Use `getMyCharities` to fetch and display charities owned by the current user.
 
 ### Donation History
 
@@ -158,10 +156,11 @@
 
 ### Devnet Deployment
 
-1. Deploy the smart contract to Devnet.
-2. Create a deployment script:
+1. ✅ Add pipeline scripts to build and test frontend and Anchor program.
+2. Deploy the smart contract to Devnet.
+3. Create a deployment script:
    - Use `anchor deploy` and upload the IDL.
-3. Store the program ID and IDL in the GitHub repository.
+4. Store the program ID and IDL in the GitHub repository.
 
 ---
 
@@ -173,5 +172,5 @@
 
 ### Program Constraints Cleanup
 
-1. Use `has_one`, `constraint`, and `seeds` consistently.
-2. Enforce authority and PDA ownership checks throughout the program.
+1. ✅ Use `has_one`, `constraint`, and `seeds` consistently.
+2. ✅ Enforce authority and PDA ownership checks throughout the program.

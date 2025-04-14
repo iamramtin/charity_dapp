@@ -204,10 +204,11 @@ pub mod charity {
     }
 
     pub fn withdraw_donations(ctx: Context<WithdrawDonations>, amount: u64) -> Result<()> {
-        let recipient = &mut ctx.accounts.recipient;
         let charity = &mut ctx.accounts.charity;
         let vault = &mut ctx.accounts.vault;
         let current_time = Clock::get()?.unix_timestamp;
+        let recipient_pubkey = charity.withdrawal_recipient.unwrap_or(charity.authority);
+        require_keys_eq!(recipient.key(), recipient_pubkey, ErrorCode::Unauthorized);
 
         let (expected_vault, _vault_bump) =
             Pubkey::find_program_address(&[b"vault", charity.key().as_ref()], ctx.program_id);
@@ -268,6 +269,19 @@ pub mod charity {
 
         Ok(())
     }
+
+    pub fn set_withdrawal_recipient(ctx: Context<SetWithdrawalRecipient>, recipient: Pubkey) -> Result<()> {
+        let charity = &mut ctx.accounts.charity;
+        charity.withdrawal_recipient = Some(recipient);
+
+        emit!(SetWithdrawalRecipientEvent {
+          charity_key: charity.key(),
+          new_recipient: recipient,
+      });
+        Ok(())
+    }
+
+
 }
 
 /**
@@ -447,6 +461,20 @@ pub struct WithdrawDonations<'info> {
     pub system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct SetWithdrawalRecipient<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        has_one = authority,
+        seeds = [b"charity", authority.key().as_ref(), charity.name.as_bytes()],
+        bump
+    )]
+    pub charity: Account<'info, Charity>,
+}
+
 /**
  * ACCOUNTS
  */
@@ -466,6 +494,7 @@ pub struct Charity {
     pub deleted_at: Option<i64>, // When charity was deleted
     pub withdrawn_at: Option<i64>, // When donations were withdrawn
     pub vault_bump: u8,    // Reference to associated vault PDA
+    pub withdrawal_recipient: Option<Pubkey>, // Optional recipient for withdrawn funds
 }
 
 #[account]
@@ -563,4 +592,10 @@ pub struct MakeDonationEvent {
     pub charity_name: String,
     pub amount: u64,
     pub created_at: i64,
+}
+
+#[event]
+pub struct SetWithdrawalRecipientEvent {
+    pub charity_key: Pubkey,
+    pub new_recipient: Pubkey,
 }
