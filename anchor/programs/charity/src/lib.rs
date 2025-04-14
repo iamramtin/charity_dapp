@@ -249,7 +249,9 @@ pub mod charity {
 
         // We could also use CPI to transfer lamports:
 
+        // Import System Program functions:
         // use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
+
         // let from_vault_pubkey = ctx.accounts.vault.to_account_info();
         // let to_recipient_pubkey = ctx.accounts.recipient.to_account_info();
         // let program_id = ctx.accounts.system_program.to_account_info();
