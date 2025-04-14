@@ -149,7 +149,7 @@ export function CharityDetailFeature() {
       {/* Update Form */}
       {isAuthority && showUpdateForm && (
         <CharityCard className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
             Update Charity Description
           </h3>
           <UpdateCharityForm
@@ -180,7 +180,7 @@ export function CharityDetailFeature() {
       {/* Donation Section */}
       {publicKey && !charity.paused && !isAuthority && (
         <CharityCard className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">Make a Donation</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Make a Donation</h3>
           <DonateForm charity={charityId as string} onSubmit={handleDonate} />
         </CharityCard>
       )}
@@ -189,7 +189,7 @@ export function CharityDetailFeature() {
       {charity.paused && (
         <div className="mt-8 p-6 bg-yellow-50 rounded-lg border border-yellow-100 text-center">
           <Icons.Pause className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-700 mb-2">
             Donations are Paused
           </h3>
           <p className="text-gray-600">
@@ -203,7 +203,7 @@ export function CharityDetailFeature() {
       {!publicKey && !charity.paused && (
         <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-100 text-center">
           <Icons.Wallet className="mx-auto h-12 w-12 text-blue-500 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-700 mb-2">
             Connect Your Wallet to Donate
           </h3>
           <p className="text-gray-600 mb-4">

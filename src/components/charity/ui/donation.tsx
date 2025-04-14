@@ -6,20 +6,35 @@ import { formatSol, formatTime } from "../utils/format";
 import { DonateArgs } from "../types/donation-types";
 
 // Donation summary component for user's donations list
-export function DonationSummary({ donation }: { donation: any }) {
+export function DonationSummary({
+  donation,
+  onClick,
+}: {
+  donation: any;
+  onClick?: () => void;
+}) {
+  console.log("Rendering donation:", donation);
+
   return (
-    <div className="border rounded-lg p-4 mb-4 bg-white shadow-sm">
+    <div
+      className={`border rounded-xl p-5 mb-5 bg-white shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ${
+        onClick ? "cursor-pointer" : ""
+      }`}
+      onClick={onClick}
+    >
       <div className="flex justify-between">
         <div>
           <h3 className="text-md font-semibold text-gray-900">
-            {donation.charityName}
+            {donation.charityName || "Unknown Charity"}
           </h3>
           <p className="text-sm text-gray-600">
-            {formatSol(donation.amountInLamports)}
+            {donation.amountInLamports
+              ? formatSol(donation.amountInLamports)
+              : "Amount unknown"}
           </p>
         </div>
         <span className="text-sm text-gray-500">
-          {formatTime(donation.createdAt)}
+          {donation.createdAt ? formatTime(donation.createdAt) : "Date unknown"}
         </span>
       </div>
     </div>
@@ -74,7 +89,7 @@ export function DonateForm({
             id="amount"
             type="number"
             step="0.01"
-            min="0.001"
+            min="0"
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.amount ? "border-red-500" : "border-gray-300"
             }`}

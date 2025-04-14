@@ -40,20 +40,6 @@ export function DonationsHistoryFeature() {
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
-      <div className="mb-6">
-        <Link
-          href="/charity"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800"
-        >
-          <Icons.ArrowLeft className="mr-2 h-4 w-4" />
-          All charities
-        </Link>
-      </div>
-
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">
-        My Donation History
-      </h1>
-
       {donations.length === 0 ? (
         <EmptyState
           message="You haven't made any donations yet."
@@ -61,7 +47,32 @@ export function DonationsHistoryFeature() {
         />
       ) : (
         <CharityCard>
-          <div className="overflow-hidden border border-gray-200 rounded-md">
+          <div className="p-4 bg-gray-50 rounded-md">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              Donation Summary
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-white rounded-md border border-gray-200">
+                <div className="text-2xl font-bold text-gray-900">
+                  {formatSol(
+                    donations.reduce(
+                      (sum, d) => sum + Number(d.amountInLamports || 0),
+                      0
+                    )
+                  )}
+                </div>
+                <div className="text-sm text-gray-500">Total Donated</div>
+              </div>
+              <div className="p-4 bg-white rounded-md border border-gray-200">
+                <div className="text-2xl font-bold text-gray-900">
+                  {donations.length}
+                </div>
+                <div className="text-sm text-gray-500">Total Donations</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 overflow-hidden border border-gray-200 rounded-md">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -122,29 +133,6 @@ export function DonationsHistoryFeature() {
                   ))}
               </tbody>
             </table>
-          </div>
-
-          <div className="mt-6 p-4 bg-gray-50 rounded-md">
-            <h3 className="text-lg font-semibold mb-2">Donation Summary</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-white rounded-md border border-gray-200">
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatSol(
-                    donations.reduce(
-                      (sum, d) => sum + Number(d.amountInLamports || 0),
-                      0
-                    )
-                  )}
-                </div>
-                <div className="text-sm text-gray-500">Total Donated</div>
-              </div>
-              <div className="p-4 bg-white rounded-md border border-gray-200">
-                <div className="text-2xl font-bold text-gray-900">
-                  {donations.length}
-                </div>
-                <div className="text-sm text-gray-500">Total Donations</div>
-              </div>
-            </div>
           </div>
         </CharityCard>
       )}

@@ -9,6 +9,8 @@ import { useCharityProgram } from "../data-access/charity-data-access";
 import { CreateCharityArgs } from "../types/charity-types";
 import { CreateCharityForm, CharitySummary } from "../ui/charity";
 import { CharityCard, LoadingSpinner, EmptyState } from "../ui/shared";
+import { DonationSummary } from "../ui/donation";
+import { DonationsHistoryFeature } from "./donations-history";
 
 // Main page with charity list and create form
 export function CharityListFeature() {
@@ -52,7 +54,7 @@ export function CharityListFeature() {
   };
 
   const navigateToCharity = (publicKey: PublicKey): void => {
-    router.push(`/charity/${publicKey.toString()}`);
+    router.push(`/charity/${publicKey?.toString()}`);
   };
 
   // Determine which data to show based on active tab
@@ -111,7 +113,7 @@ export function CharityListFeature() {
       )}
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-gray-200">
         <nav className="flex -mb-px space-x-8">
           <button
             onClick={() => setActiveTab("allCharities")}
@@ -145,7 +147,7 @@ export function CharityListFeature() {
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
-                Donated To
+                My Donations
               </button>
             </>
           )}
@@ -155,27 +157,46 @@ export function CharityListFeature() {
       {/* Content based on selected tab */}
       {isLoading ? (
         <LoadingSpinner />
-      ) : charities.length === 0 ? (
+      ) : (activeTab === "allCharities" || activeTab === "myCharities") &&
+        charities.length === 0 ? (
         <EmptyState
           message={
             activeTab === "allCharities"
               ? "No charities created yet. Be the first to create one!"
-              : activeTab === "myCharities"
-              ? "You haven't created any charities yet."
-              : "You haven't donated to any charities yet."
+              : "You haven't created any charities yet."
           }
-          icon={activeTab === "donated" ? Icons.Heart : Icons.HandHeart}
+          icon={Icons.HandHeart}
+        />
+      ) : activeTab === "donated" && getMyDonations.data?.length === 0 ? (
+        <EmptyState
+          message="You haven't donated to any charities yet."
+          icon={Icons.Heart}
         />
       ) : (
         <div>
-          {charities.map((charity) => (
-            <CharitySummary
-              key={charity?.publicKey?.toString()}
-              charity={charity}
-              isAuthority={activeTab === "myCharities"}
-              onClick={() => navigateToCharity(charity.publicKey)}
-            />
-          ))}
+          {activeTab === "donated" ? (
+            // Use DonationSummary for the donated tab
+            // getMyDonations.data?.map((donation) => (
+            //   <DonationSummary
+            //     key={donation?.publicKey?.toString()}
+            //     donation={donation}
+            //     onClick={() => navigateToCharity(donation.charityKey)}
+            //   />
+            // ))
+            <DonationsHistoryFeature />
+          ) : (
+            // Use CharitySummary for other tabs
+            <div className="mt-8">
+              {charities.map((charity) => (
+                <CharitySummary
+                  key={charity?.publicKey?.toString()}
+                  charity={charity}
+                  isAuthority={activeTab === "myCharities"}
+                  onClick={() => navigateToCharity(charity.publicKey)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 

@@ -83,12 +83,12 @@
 
 ## ✅ Tests (Solana-Bankrun / Mocha / Anchor) - Completed
 
-1. Write and maintain test coverage for all instructions:
-   - `set_withdrawal_recipient`
-   - `pause_donations` / `unpause_donations`
-   - SOL donation flows
-   - Withdrawals with and without recipient override
-2. Include edge cases and error scenarios.
+1. ✅  Write and maintain test coverage for instructions:
+   - ✅ `pause_donations` / `unpause_donations`
+   - ✅ Charity creation flows
+   - ✅ SOL donation flows
+   - ✅ Withdrawals with and without recipient override
+2. ✅ Include edge cases and error scenarios.
 
 ---
 
@@ -125,11 +125,11 @@
    - Pause / Unpause donations (`pauseDonations`).
    - Set withdrawal recipient (`updateCharity`).
 
-### Donation Flow
+### ✅ Donation Flow
 
-1. Use `donate` to handle SOL.
-2. Validate input amount and token type.
-3. Display paused state and disable donation if applicable.
+1. ✅ Use `donate` to handle SOL.
+2. ✅ Validate input amount and token type.
+3. ✅ Display paused state and disable donation if applicable.
 
 ### Withdraw Flow (For Authority)
 
@@ -143,8 +143,8 @@
 
 ### Donation History
 
-1. Use `getMyDonations` to display the user's donation history.
-2. Use `useDonationAccount` to fetch and manage donation-specific data.
+1. ✅ Use `getMyDonations` to display the user's donation history.
+2. ✅ Use `useDonationAccount` to fetch and manage donation-specific data.
 
 ### Statistics and Insights
 
