@@ -73,17 +73,11 @@
    - Use a cron-like mechanism or external service to trigger donations.
 2. Store recurring donation metadata in a new account or existing structure.
 
-### Impact Reporting (Optional)
-
-1. Allow charities to submit reports on how funds were used.
-2. Add a `reports` field to the `Charity` account or create a new `ImpactReport` account.
-3. Display reports in the frontend for donors to view.
-
 ---
 
 ## ✅ Tests (Solana-Bankrun / Mocha / Anchor) - Completed
 
-1. ✅  Write and maintain test coverage for instructions:
+1. ✅ Write and maintain test coverage for instructions:
    - ✅ `pause_donations` / `unpause_donations`
    - ✅ Charity creation flows
    - ✅ SOL donation flows
@@ -107,9 +101,7 @@
 - ✅ `pauseDonations`: Pause donations for a charity.
 - ✅ `withdrawDonations`: Withdraw donations from a charity.
 - ✅ `deleteCharity`: Delete a charity account.
-- ✅ `useCharityAccount`: Hook to fetch and manage a specific charity account.
-- ✅ `useDonationAccount`: Hook to fetch and manage donation accounts.
-- ✅ `useCharityStats`: Hook to fetch and manage charity statistics.
+- ✅ `useAccount`: Hook to fetch and manage a specific charity account.
 
 ✅ 2. Ensure all functions and hooks handle loading, error states, and caching efficiently.
 
@@ -119,7 +111,7 @@
 
 ### ✅ Charity Management
 
-1. ✅ Use `useCharityAccount` to display charity details:
+1. ✅ Use `useAccount` to display charity details:
    - `name`, `authority`, `paused` status, donation stats, recipient wallet (if set).
 2. ✅ Add action buttons for:
    - Pause / Unpause donations (`pauseDonations`).
@@ -141,14 +133,10 @@
 1. ✅ Use `getAllCharities` to fetch and display all charities.
 2. ✅ Use `getMyCharities` to fetch and display charities owned by the current user.
 
-### Donation History
+### ✅ Donation History
 
 1. ✅ Use `getMyDonations` to display the user's donation history.
 2. ✅ Use `useDonationAccount` to fetch and manage donation-specific data.
-
-### Statistics and Insights
-
-1. Use `useCharityStats` to display donation statistics and trends for charities.
 
 ---
 
@@ -158,7 +146,7 @@
 
 1. ✅ Add pipeline scripts to build and test frontend and Anchor program.
 2. Deploy the smart contract to Devnet.
-3. Create a deployment script:
+3. ✅ Create a deployment script:
    - Use `anchor deploy` and upload the IDL.
 4. Store the program ID and IDL in the GitHub repository.
 

@@ -7,10 +7,7 @@ import Link from "next/link";
 import * as Icons from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 
-import {
-  useCharityProgram,
-  useCharityAccount,
-} from "../data-access/charity-data-access";
+import { useProgram, useAccount } from "../data-access/data-access";
 import { CharityDetails, UpdateCharityForm } from "../ui/charity";
 import { DonateForm } from "../ui/donation";
 import { CharityCard, LoadingSpinner, EmptyState } from "../ui/shared";
@@ -37,10 +34,10 @@ export function CharityDetailFeature() {
     pauseDonations,
     withdrawDonations,
     deleteCharity,
-  } = useCharityProgram();
+  } = useProgram();
 
   const { charityQuery, donationsQuery, vaultBalanceQuery } =
-    useCharityAccount(charityPubkey);
+    useAccount(charityPubkey);
 
   const charity = charityQuery.data;
   const donations = donationsQuery.data ?? [];
@@ -121,9 +118,8 @@ export function CharityDetailFeature() {
     return <EmptyState message="Charity not found." icon={Icons.Search} />;
   }
 
-  // --- Render Section ---
   return (
-    <div className="container mx-auto max-w-4xl py-10 px-4">
+    <div className="container mx-auto min-w-[700px] py-8 px-4">
       {/* Back Button */}
       <div className="mb-6">
         <Link
@@ -170,7 +166,7 @@ export function CharityDetailFeature() {
       {isAuthority && !showUpdateForm && (
         <button
           onClick={() => setShowUpdateForm(true)}
-          className="mt-6 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+          className="mt-6 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
         >
           <Icons.Edit className="mr-2 h-4 w-4" />
           Update Description
@@ -180,7 +176,9 @@ export function CharityDetailFeature() {
       {/* Donation Section */}
       {publicKey && !charity.paused && !isAuthority && (
         <CharityCard className="mt-8">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Make a Donation</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">
+            Make a Donation
+          </h3>
           <DonateForm charity={charityId as string} onSubmit={handleDonate} />
         </CharityCard>
       )}
@@ -209,7 +207,7 @@ export function CharityDetailFeature() {
           <p className="text-gray-600 mb-4">
             You need to connect your wallet to make donations to this charity.
           </p>
-          <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
             Connect Wallet
           </button>
         </div>

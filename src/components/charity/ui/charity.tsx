@@ -47,7 +47,7 @@ export function CreateCharityForm({
         <input
           id="name"
           type="text"
-          className={`w-full px-3 py-2 border bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          className={`w-full px-3 py-2 border bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors.name ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Enter charity name"
@@ -68,7 +68,7 @@ export function CreateCharityForm({
         <textarea
           id="description"
           rows={4}
-          className={`w-full px-3 py-2 border bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          className={`w-full px-3 py-2 border bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors.description ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Describe your charity (max 100 characters)"
@@ -90,7 +90,7 @@ export function CreateCharityForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center">
@@ -138,7 +138,7 @@ export function UpdateCharityForm({
         <textarea
           id="description"
           rows={4}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
             errors.description ? "border-red-500" : "border-gray-300"
           }`}
           placeholder="Describe your charity (max 100 characters)"
@@ -160,7 +160,7 @@ export function UpdateCharityForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center">
@@ -224,7 +224,7 @@ export function WithdrawForm({
         <input
           id="recipient"
           type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Solana address to receive funds"
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
@@ -239,14 +239,14 @@ export function WithdrawForm({
         >
           Amount to Withdraw (SOL)
         </label>
-        <div className="relative mt-1 rounded-md shadow-sm">
+        <div className="relative mt-1 rounded-lg shadow-sm">
           <input
             id="amount"
             type="number"
             step="0.01"
             min="0.001"
             max={maxWithdrawSol}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter amount in SOL"
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
@@ -279,7 +279,7 @@ export function WithdrawForm({
           lamportsAmount <= 0 ||
           lamportsAmount > availableBalance
         }
-        className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center">
@@ -309,7 +309,7 @@ export function CharitySummary({
 }) {
   return (
     <div
-      className={`border rounded-md ml-4 mr-4 p-5 mb-5 bg-white shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ${
+      className={`border rounded-lg ml-4 mr-4 p-5 mb-5 bg-white shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 ${
         onClick ? "cursor-pointer" : ""
       }`}
       onClick={onClick}
@@ -388,7 +388,7 @@ export function CharityDetails({
         {isAuthority && (
           <button
             onClick={() => onPauseToggle(!charity.paused)}
-            className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md transition ${
+            className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition ${
               charity.paused
                 ? "bg-green-100 text-green-800 hover:bg-green-200"
                 : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
@@ -493,18 +493,26 @@ export function CharityDetails({
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setShowWithdrawForm(true)}
-                disabled={!vaultHasFunds}
-                className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md ${
-                  vaultHasFunds
-                    ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                <Icons.ArrowDownToLine className="mr-1.5 h-4 w-4" />
-                Withdraw Funds
-              </button>
+              <div className="relative group w-fit">
+                <button
+                  onClick={() => setShowWithdrawForm(true)}
+                  disabled={!vaultHasFunds}
+                  className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                    vaultHasFunds
+                      ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <Icons.ArrowDownToLine className="mr-2 h-4 w-4" />
+                  Withdraw Funds
+                </button>
+
+                {!vaultHasFunds && (
+                  <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-10 px-4 py-2 bg-gray-600 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                    No funds available to withdraw
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
@@ -515,7 +523,7 @@ export function CharityDetails({
               Permanently delete this charity. This cannot be undone.
             </p>
             {showDeleteConfirm ? (
-              <div className="p-4 bg-red-50 rounded-md">
+              <div className="p-4 bg-red-50 rounded-lg">
                 <p className="text-sm text-red-700 mb-4">
                   Are you sure? Remaining funds will be returned to your wallet.
                 </p>
@@ -527,7 +535,7 @@ export function CharityDetails({
             ) : (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-red-100 text-red-800 hover:bg-red-200"
+                className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-red-100 text-red-800 hover:bg-red-200"
               >
                 <Icons.Trash2 className="mr-1.5 h-4 w-4" />
                 Delete Charity
