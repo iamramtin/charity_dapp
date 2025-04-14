@@ -1,37 +1,23 @@
-# Solana Charity DApp
+# Solana Charity Platform dApp
 
-## 🌍 About the Project
-
-Solana Charity DApp is a decentralized donation platform that allows users to donate SOL or USDC to verified charities. Built using **Solana**, **Anchor**, **React**, and **Dialect Blinks**, this project provides a seamless on-chain experience for users looking to support charitable causes.
+A decentralized charity donation platform built on the Solana blockchain. This application enables transparent fundraising, seamless donations, and complete accountability through blockchain technology.
 
 ## 🔥 Features
 
-- **Donate SOL & USDC** to registered charities on Solana.
-- **Anchor Smart Contract** to manage and track donations.
-- **React Frontend** with Solana Wallet Adapter for user interaction.
-- **Dialect Blinks Integration** for an enhanced donation experience.
-- **Devnet Deployment** for testing and showcasing the project.
-- **Potential API/Web Scraping** to pull charity data.
+- **Create Charities:** Set up charity fundraisers with custom names and descriptions
+- **Donate SOL:** Make donations directly to charities of your choice
+- **Track Donations:** View complete donation history and statistics
+- **Withdraw Funds:** Charity owners can withdraw donations for their causes
+- **Pause/Resume:** Temporarily pause donations when needed
+- **Transparent History:** All donations are permanently recorded on the blockchain
 
-## 📂 Project Structure
+## 🏛️ Technical Architecture
 
-```
-sol-charity-dapp/
-├── programs/              # Solana smart contracts (Anchor)
-│   ├── sol_charity/       # Main Anchor program
-│   ├── Cargo.toml         # Rust dependencies
-│   ├── src/lib.rs         # Entry point of the Solana program
-│
-├── frontend/              # React-based frontend
-│   ├── src/               # UI & web3 integrations
-│   ├── package.json       # Dependencies
-│   ├── wallet-adapter.ts  # Solana wallet connection
-│
-├── migrations/            # Anchor deployment scripts
-├── tests/                 # Smart contract tests
-├── Anchor.toml            # Anchor config
-├── README.md              # Project documentation
-```
+This dApp consists of three main components:
+
+- **Solana Smart Contract**: Written in Rust using the Anchor framework
+- **Data Access Layer**: TypeScript hooks that interface with the Solana blockchain
+- **React UI**: Modern, responsive interface for interacting with the contract
 
 ## 🚀 Getting Started
 
@@ -41,119 +27,61 @@ sol-charity-dapp/
 - [Solana CLI](https://docs.solana.com/cli/install-solana-cli-tools)
 - [Anchor Framework](https://www.anchor-lang.com/docs/installation)
 - [Node.js & npm](https://nodejs.org/en/download/)
+- A Solana wallet (Phantom, Solflare, etc.)
 
 ### 🔧 Setup & Installation
 
-1. **Install Dependencies:**
+1. **Clone the repository:**
 
    ```sh
+   git clone https://github.com/iamramtin/charity-dapp.git
+   cd solana-charity-dapp
+   ```
+
+2. **Install Dependencies:**
+
+   ```sh
+   npm install
    anchor build
    cd frontend
-   npm install
    ```
 
-2. **Run Solana Localnet for Testing:**
+3. **Building the Project:**
 
    ```sh
-   solana-test-validator --reset
+   npm run anchor::build
+   npm run build
    ```
 
-3. **Deploy Smart Contract on Devnet:**
+4. **Running the Tests:**
 
    ```sh
-   anchor deploy
+   npm run anchor::test
    ```
 
-4. **Start Frontend Development Server:**
+5. **Running the App:**
 
    ```sh
-   cd frontend
-   npm start
+   npm run dev
    ```
 
-## 📜 Smart Contract Overview
+## Smart Contract
 
-### **Data Structures**
+The charity program implements these key instructions:
 
-#### `CharityAccount`
+- **createCharity**: Create a new charity with specified name and description
+- **updateCharity**: Update a charity's description
+- **donateSol**: Make a donation to a specific charity
+- **pauseDonations**: Toggle donation status
+- **withdrawDonations**: Withdraw funds to a recipient account
+- **deleteCharity**: Remove a charity and recover rent
 
-```rust
-#[account]
-pub struct CharityAccount {
-    pub wallet: Pubkey,       // Charity's wallet address
-    pub total_donated: u64,   // Total SOL received
-    pub bump: u8,             // PDA bump seed
-}
-```
+## Security Considerations
 
-#### `Donation`
-
-```rust
-#[account]
-pub struct Donation {
-    pub donor: Pubkey,        // Address of the donor
-    pub charity: Pubkey,      // Address of the charity
-    pub amount: u64,          // Amount donated
-    pub timestamp: i64,       // Donation timestamp
-}
-```
-
-### **Create a Charity Account**
-
-- Stores charity wallet & total donations.
-- PDA is derived using:
-  ```rust
-  let (charity_pda, _bump) = Pubkey::find_program_address(
-      &[b"charity", charity_wallet.key().as_ref()],
-      program_id
-  );
-  ```
-
-### **Donate SOL to a Charity**
-
-```rust
-pub fn donate(ctx: Context<Donate>, amount: u64) -> Result<()> {
-    let charity = &mut ctx.accounts.charity;
-    let transfer_instruction = anchor_lang::solana_program::system_instruction::transfer(
-        &ctx.accounts.donor.key(),
-        &charity.wallet,
-        amount,
-    );
-    anchor_lang::solana_program::program::invoke(
-        &transfer_instruction,
-        &[
-            ctx.accounts.donor.to_account_info(),
-            ctx.accounts.charity.to_account_info(),
-            ctx.accounts.system_program.to_account_info(),
-        ],
-    )?;
-    charity.total_donated += amount;
-    Ok(())
-}
-```
-
-### **Frontend Integration**
-
-- **Wallet Connection** via `@solana/wallet-adapter-react`
-- **Anchor Provider Setup**
-
-```typescript
-import { AnchorProvider, Program } from "@project-serum/anchor";
-import { Connection, PublicKey } from "@solana/web3.js";
-
-const provider = new AnchorProvider(
-    new Connection("https://api.devnet.solana.com"),
-    wallet, // User's wallet
-    {} // Default options
-);
-const program = new Program(idl, programID, provider);
-```
-
-## 📡 Future Enhancements
-
-- **SPL Token Support** (USDC Donations)
-- **Leaderboard of Top Donors**
-- **AI Agents Recommendations**
+- Only the charity authority can manage, update, withdraw from, or delete their charity
+- Donations are stored in a vault account owned by the program
+- Withdrawals preserve minimum rent-exempt balance
+- All actions are recorded with timestamps for transparency
 
 ## 📄 License
 
