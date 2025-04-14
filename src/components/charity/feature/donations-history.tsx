@@ -1,17 +1,16 @@
 "use client";
 
 import { useWallet } from "@solana/wallet-adapter-react";
-import Link from "next/link";
 import * as Icons from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCharityProgram } from "../data-access/charity-data-access";
+import { useProgram } from "../data-access/data-access";
 import { CharityCard, LoadingSpinner, EmptyState } from "../ui/shared";
 import { formatSol, formatTime } from "../utils/format";
 
 // My Donations History Feature
 export function DonationsHistoryFeature() {
   const { publicKey } = useWallet();
-  const { getMyDonations } = useCharityProgram();
+  const { getMyDonations } = useProgram();
   const router = useRouter();
 
   // If user not connected, redirect or show message
@@ -25,7 +24,7 @@ export function DonationsHistoryFeature() {
         <p className="text-gray-600 mb-6">
           Please connect your wallet to view your donation history.
         </p>
-        <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+        <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
           Connect Wallet
         </button>
       </div>
@@ -47,12 +46,12 @@ export function DonationsHistoryFeature() {
         />
       ) : (
         <CharityCard>
-          <div className="p-4 bg-gray-50 rounded-md">
+          <div className="p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Donation Summary
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-white rounded-md border border-gray-200">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="text-2xl font-bold text-gray-900">
                   {formatSol(
                     donations.reduce(
@@ -63,7 +62,7 @@ export function DonationsHistoryFeature() {
                 </div>
                 <div className="text-sm text-gray-500">Total Donated</div>
               </div>
-              <div className="p-4 bg-white rounded-md border border-gray-200">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="text-2xl font-bold text-gray-900">
                   {donations.length}
                 </div>
@@ -72,7 +71,7 @@ export function DonationsHistoryFeature() {
             </div>
           </div>
 
-          <div className="mt-6 overflow-hidden border border-gray-200 rounded-md">
+          <div className="mt-6 overflow-hidden border border-gray-200 rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>

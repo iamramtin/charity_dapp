@@ -42,7 +42,7 @@ export const findVaultPda = (charityPda: PublicKey, programId: PublicKey) => {
   );
 };
 
-export function useCharityProgram() {
+export function useProgram() {
   const { connection } = useConnection();
   const { publicKey } = useWallet();
   const { cluster } = useCluster();
@@ -347,9 +347,9 @@ export function useCharityProgram() {
   };
 }
 
-export function useCharityAccount(charityKey: PublicKey | undefined) {
+export function useAccount(charityKey: PublicKey | undefined) {
   const { cluster } = useCluster();
-  const { program } = useCharityProgram();
+  const { program } = useProgram();
   const provider = useAnchorProvider();
 
   // Query to fetch a specific charity account

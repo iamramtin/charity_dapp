@@ -103,7 +103,7 @@ export function ConfirmButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-red-500 text-white hover:bg-red-600"
+      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-red-500 text-white hover:bg-red-600"
     >
       <Icons.Trash2 className="mr-1.5 h-4 w-4" />
       Yes, Delete Charity
@@ -115,7 +115,7 @@ export function CancelButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300"
+      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300"
     >
       Cancel
     </button>
@@ -124,7 +124,7 @@ export function CancelButton({ onClick }: { onClick: () => void }) {
 
 export function DonationTable({ donations }: { donations: any[] }) {
   return (
-    <div className="overflow-hidden border border-gray-200 rounded-md">
+    <div className="overflow-hidden border border-gray-200 rounded-lg">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>

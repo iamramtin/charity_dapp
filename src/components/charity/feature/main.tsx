@@ -5,15 +5,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import * as Icons from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCharityProgram } from "../data-access/charity-data-access";
+import { useProgram } from "../data-access/data-access";
 import { CreateCharityArgs } from "../types/charity-types";
 import { CreateCharityForm, CharitySummary } from "../ui/charity";
 import { CharityCard, LoadingSpinner, EmptyState } from "../ui/shared";
-import { DonationSummary } from "../ui/donation";
 import { DonationsHistoryFeature } from "./donations-history";
 
 // Main page with charity list and create form
-export function CharityListFeature() {
+export function Main() {
   const { publicKey } = useWallet();
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -22,7 +21,7 @@ export function CharityListFeature() {
   >("allCharities");
 
   const { getAllCharities, getMyCharities, getMyDonations, createCharity } =
-    useCharityProgram();
+    useProgram();
 
   // Filter donations to group by charity and get unique charities
   const donatedCharities = useMemo(() => {
@@ -85,7 +84,7 @@ export function CharityListFeature() {
         {publicKey && (
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center ml-12 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+            className="flex items-center ml-12 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
           >
             {showCreateForm ? (
               <>
@@ -119,8 +118,8 @@ export function CharityListFeature() {
             onClick={() => setActiveTab("allCharities")}
             className={`pb-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === "allCharities"
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ? "border-blue-500 text-blue-500"
+                : "border-transparent text-gray-200 hover:text-gray-700 hover:border-gray-300"
             }`}
           >
             All Charities
@@ -132,8 +131,8 @@ export function CharityListFeature() {
                 onClick={() => setActiveTab("myCharities")}
                 className={`pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === "myCharities"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-blue-500 text-blue-500"
+                    : "border-transparent text-gray-200 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
                 My Charities
@@ -143,8 +142,8 @@ export function CharityListFeature() {
                 onClick={() => setActiveTab("donated")}
                 className={`pb-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === "donated"
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    ? "border-blue-500 text-blue-500"
+                    : "border-transparent text-gray-200 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
                 My Donations
@@ -210,7 +209,7 @@ export function CharityListFeature() {
           <p className="text-gray-600 mb-4">
             Connect your wallet to create charities or make donations.
           </p>
-          <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+          <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
             Connect Wallet
           </button>
         </div>
