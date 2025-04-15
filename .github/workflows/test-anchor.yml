@@ -48,6 +48,11 @@ jobs:
         run: ./scripts/build_anchor.sh --update-cargo --rust-version 1.77.0
         shell: bash
 
+      - name: Start Solana Test Validator
+        run: |
+          nohup solana-test-validator > validator.log 2>&1 &
+          sleep 10
+
       - name: Test Anchor Program
         run: ./scripts/test_anchor.sh
         shell: bash

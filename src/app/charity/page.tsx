@@ -1,12 +1,12 @@
 "use client";
 
+import { Main } from "@/components/charity/feature/main";
 import { Suspense } from "react";
-import { CharityListFeature } from "@/components/charity/charity-feature";
 
 export default function CharitiesPage() {
   return (
     <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
-      <CharityListFeature />
+      <Main />
     </Suspense>
   );
 }

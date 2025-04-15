@@ -363,6 +363,66 @@ export type Charity = {
       ]
     },
     {
+      "name": "setWithdrawalRecipient",
+      "discriminator": [
+        39,
+        143,
+        225,
+        235,
+        133,
+        146,
+        130,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "charity"
+          ]
+        },
+        {
+          "name": "charity",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  97,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              },
+              {
+                "kind": "account",
+                "path": "charity.name",
+                "account": "charity"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "recipient",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
       "name": "updateCharity",
       "discriminator": [
         93,
@@ -573,6 +633,19 @@ export type Charity = {
       ]
     },
     {
+      "name": "setWithdrawalRecipientEvent",
+      "discriminator": [
+        202,
+        62,
+        83,
+        159,
+        167,
+        70,
+        162,
+        169
+      ]
+    },
+    {
       "name": "updateCharityEvent",
       "discriminator": [
         29,
@@ -644,6 +717,16 @@ export type Charity = {
       "code": 6008,
       "name": "donationsPaused",
       "msg": "Donations for this charity are paused"
+    },
+    {
+      "code": 6009,
+      "name": "invalidWithdrawalRecipient",
+      "msg": "Invalid withdrawal recipient"
+    },
+    {
+      "code": 6010,
+      "name": "recipientAlreadySet",
+      "msg": "Recipient already set"
     }
   ],
   "types": [
@@ -702,6 +785,12 @@ export type Charity = {
           {
             "name": "vaultBump",
             "type": "u8"
+          },
+          {
+            "name": "recipient",
+            "type": {
+              "option": "pubkey"
+            }
           }
         ]
       }
@@ -833,6 +922,22 @@ export type Charity = {
           {
             "name": "updatedAt",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "setWithdrawalRecipientEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "charityKey",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipientKey",
+            "type": "pubkey"
           }
         ]
       }

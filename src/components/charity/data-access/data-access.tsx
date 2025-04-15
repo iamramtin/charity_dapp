@@ -1,52 +1,28 @@
-"use client";
-
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Cluster, PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useAnchorProvider } from "../solana/solana-provider";
-import { useCluster } from "../cluster/cluster-data-access";
+import { useAnchorProvider } from "../../solana/solana-provider";
+import { useCluster } from "../../cluster/cluster-data-access";
 import toast from "react-hot-toast";
 import { useMemo } from "react";
-import { useTransactionToast } from "../ui/ui-layout";
-
+import { useTransactionToast } from "../../ui/ui-layout";
 import {
   ANCHOR_DISCRIMINATOR_SIZE,
   getCharityProgram,
   getCharityProgramId,
-} from "../../../anchor/src/charity-exports";
-
-export interface CreateCharityArgs {
-  name: string;
-  description: string;
-}
-
-export interface UpdateCharityArgs {
-  charity: string;
-  description: string;
-}
-
-export interface DonateArgs {
-  charity: string;
-  amount: number;
-}
-
-export interface PauseDonationsArgs {
-  charity: string;
-  paused: boolean;
-}
-
-export interface WithdrawDonationsArgs {
-  charity: string;
-  recipient: string;
-  amount: number;
-}
-
-export interface DeleteCharityArgs {
-  charity: string;
-  recipient: string;
-}
+} from "@project/anchor";
+import {
+  CreateCharityArgs,
+  DeleteCharityArgs,
+  UpdateCharityArgs,
+} from "../types/charity-types";
+import {
+  DonateArgs,
+  PauseDonationsArgs,
+  WithdrawDonationsArgs,
+} from "../types/donation-types";
 
 export const findCharityPda = (
   name: string,
@@ -66,24 +42,7 @@ export const findVaultPda = (charityPda: PublicKey, programId: PublicKey) => {
   );
 };
 
-export const findDonationPda = (
-  donor: PublicKey,
-  charity: PublicKey,
-  donationCount: number,
-  programId: PublicKey
-) => {
-  return PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("donation"),
-      donor.toBuffer(),
-      charity.toBuffer(),
-      new BN(donationCount).toArrayLike(Buffer, "le", 8),
-    ],
-    programId
-  );
-};
-
-export function useCharityProgram() {
+export function useProgram() {
   const { connection } = useConnection();
   const { publicKey } = useWallet();
   const { cluster } = useCluster();
@@ -110,13 +69,28 @@ export function useCharityProgram() {
 
   // Query to fetch all charity accounts
   const getAllCharities = useQuery({
-    queryKey: ["charity", "all", { cluster }],
-    queryFn: () => program.account.charity.all(),
+    queryKey: ["charity", "allCharities", { cluster }],
+    queryFn: async () => {
+      try {
+        const accounts = await program.account.charity.all();
+        return accounts.map((account) => ({
+          publicKey: account.publicKey,
+          ...account.account,
+        }));
+      } catch (error) {
+        console.error("Error fetching all charities:", error);
+        return [];
+      }
+    },
   });
 
   // Query to fetch all charity accounts created by the connected wallet
   const getMyCharities = useQuery({
-    queryKey: ["charity", "my", { cluster, publicKey: publicKey?.toString() }],
+    queryKey: [
+      "charity",
+      "myCharities",
+      { cluster, publicKey: publicKey?.toString() },
+    ],
     queryFn: async () => {
       if (!publicKey) return [];
 
@@ -145,11 +119,17 @@ export function useCharityProgram() {
 
   // Query to fetch all donations made by the connected wallet
   const getMyDonations = useQuery({
-    queryKey: ["donation", "my", { cluster, publicKey: publicKey?.toString() }],
+    queryKey: [
+      "donation",
+      "myDonations",
+      { cluster, publicKey: publicKey?.toString() },
+    ],
     queryFn: async () => {
       if (!publicKey) return [];
 
       try {
+        console.log("Fetching donations for wallet:", publicKey.toString());
+
         // Fetch all donation accounts where donorKey = publicKey
         const accounts = await program.account.donation.all([
           {
@@ -160,12 +140,19 @@ export function useCharityProgram() {
           },
         ]);
 
+        console.log("Raw donation accounts:", accounts);
+
+        if (accounts.length === 0) {
+          console.log("No donations found for this wallet");
+        }
+
         return accounts.map((account) => ({
           publicKey: account.publicKey,
           ...account.account,
         }));
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching my donations:", error);
+        console.error("Error details:", error.message, error.stack);
         return [];
       }
     },
@@ -178,14 +165,32 @@ export function useCharityProgram() {
       if (!publicKey) throw new Error("Wallet not connected");
 
       try {
-        return program.methods
+        // Derive the charity PDA
+        const [charityPda] = findCharityPda(name, publicKey, program.programId);
+
+        // Derive the vault PDA
+        const [vaultPda] = findVaultPda(charityPda, program.programId);
+
+        console.log("Creating charity with PDAs:", {
+          charityPda: charityPda.toString(),
+          vaultPda: vaultPda.toString(),
+        });
+
+        const tx = await program.methods
           .createCharity(name, description)
           .accounts({
             authority: publicKey,
           })
           .rpc();
-      } catch (error) {
+
+        console.log("Charity created with signature:", tx);
+
+        return tx;
+      } catch (error: any) {
         console.error("Error creating charity:", error);
+        if (error.logs) {
+          console.error("Transaction logs:", error.logs);
+        }
         throw error;
       }
     },
@@ -342,9 +347,9 @@ export function useCharityProgram() {
   };
 }
 
-export function useCharityAccount(charityKey: PublicKey | undefined) {
+export function useAccount(charityKey: PublicKey | undefined) {
   const { cluster } = useCluster();
-  const { program } = useCharityProgram();
+  const { program } = useProgram();
   const provider = useAnchorProvider();
 
   // Query to fetch a specific charity account
@@ -435,66 +440,4 @@ export function useCharityAccount(charityKey: PublicKey | undefined) {
     donationsQuery,
     vaultBalanceQuery,
   };
-}
-
-export function useDonationAccount(donationKey: PublicKey | undefined) {
-  const { cluster } = useCluster();
-  const { program } = useCharityProgram();
-  const provider = useAnchorProvider();
-
-  // Query to fetch a specific donation account
-  const donationQuery = useQuery({
-    queryKey: [
-      "donation",
-      "fetch",
-      { cluster, donationKey: donationKey?.toString() },
-    ],
-    queryFn: async () => {
-      if (!donationKey) return null;
-
-      try {
-        const account = await program.account.donation.fetch(donationKey);
-        return {
-          publicKey: donationKey,
-          ...account,
-        };
-      } catch (error) {
-        console.error("Error fetching donation account:", error);
-        return null;
-      }
-    },
-    enabled: !!donationKey && !!provider,
-  });
-
-  return {
-    donationQuery,
-  };
-}
-
-// Helper hook to get total donations and donation count for a charity
-export function useCharityStats(charityKey: PublicKey | undefined) {
-  const { donationsQuery } = useCharityAccount(charityKey);
-
-  const stats = useMemo(() => {
-    if (!donationsQuery.data || donationsQuery.data.length === 0) {
-      return {
-        totalDonations: 0,
-        donationCount: 0,
-        averageDonation: 0,
-      };
-    }
-
-    const totalDonations = donationsQuery.data.reduce(
-      (sum, donation) => sum + Number(donation.amountInLamports || 0),
-      0
-    );
-
-    return {
-      totalDonations,
-      donationCount: donationsQuery.data.length,
-      averageDonation: totalDonations / donationsQuery.data.length,
-    };
-  }, [donationsQuery.data]);
-
-  return stats;
 }

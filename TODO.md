@@ -1,8 +1,6 @@
 # Team To-Do List
 
----
-
-## On-Chain (Solana Program / Anchor)
+## ✅ Main On-Chain (Solana Program / Anchor)
 
 ### ✅ `create_charity` Instruction
 
@@ -30,14 +28,7 @@
 
 1. Allow the authority to withdraw donations from the charity account.
 
-### `set_withdrawal_recipient` Instruction (Optional)
-
-1. Add `pub withdrawal_recipient: Option<Pubkey>` to the `Charity` account.
-2. Implement the `set_withdrawal_recipient()` instruction:
-   - Allow the charity to set or update the withdrawal recipient address.
-   - Require authority signature for updates.
-3. Update `withdraw_donations()`:
-   - Use `withdrawal_recipient` if set; fallback to the original authority otherwise.
+## Additional On-Chain (Solana Program / Anchor)
 
 ### ✅ `pause_donations` Instruction (Optional) - Completed
 
@@ -47,6 +38,15 @@
    - `unpause_donations()`: Set `paused` to `false`.
 3. Update `donate()`:
    - Reject donations if the charity is paused.
+
+### `set_withdrawal_recipient` Instruction (Optional)
+
+1. Add `pub withdrawal_recipient: Option<Pubkey>` to the `Charity` account.
+2. Implement the `set_withdrawal_recipient()` instruction:
+   - Allow the charity to set or update the withdrawal recipient address.
+   - Require authority signature for updates.
+3. Update `withdraw_donations()`:
+   - Use `withdrawal_recipient` if set; fallback to the original authority otherwise.
 
 ### USDC Support (Optional)
 
@@ -75,30 +75,24 @@
    - Use a cron-like mechanism or external service to trigger donations.
 2. Store recurring donation metadata in a new account or existing structure.
 
-### Impact Reporting (Optional)
-
-1. Allow charities to submit reports on how funds were used.
-2. Add a `reports` field to the `Charity` account or create a new `ImpactReport` account.
-3. Display reports in the frontend for donors to view.
-
 ---
 
 ## ✅ Tests (Solana-Bankrun / Mocha / Anchor) - Completed
 
-1. Write and maintain test coverage for all instructions:
-   - `set_withdrawal_recipient`
-   - `pause_donations` / `unpause_donations`
-   - SOL donation flows
-   - Withdrawals with and without recipient override
-2. Include edge cases and error scenarios.
+1. ✅ Write and maintain test coverage for instructions:
+   - ✅ `pause_donations` / `unpause_donations`
+   - ✅ Charity creation flows
+   - ✅ SOL donation flows
+   - ✅ Withdrawals with and without recipient override
+2. ✅ Include edge cases and error scenarios.
 
 ---
 
-## Off-Chain Handlers (Anchor + TypeScript) - Completed
+## ✅ Off-Chain Handlers (Anchor + TypeScript) - Completed
 
 ### ✅ Add Hooks for Core Functionality (Data Access Layer)
 
-✅ 1. Implemented functions in the data access layer:
+✅ 1. Implement functions in the data access layer:
 
 - ✅ `getAllCharities`: Fetch all `Charity` accounts.
 - ✅ `getMyCharities`: Fetch charities owned by the current user.
@@ -109,48 +103,41 @@
 - ✅ `pauseDonations`: Pause donations for a charity.
 - ✅ `withdrawDonations`: Withdraw donations from a charity.
 - ✅ `deleteCharity`: Delete a charity account.
-- ✅ `useCharityAccount`: Hook to fetch and manage a specific charity account.
-- ✅ `useDonationAccount`: Hook to fetch and manage donation accounts.
-- ✅ `useCharityStats`: Hook to fetch and manage charity statistics.
+- ✅ `useAccount`: Hook to fetch and manage a specific charity account.
 
 ✅ 2. Ensure all functions and hooks handle loading, error states, and caching efficiently.
 
 ---
 
-## Frontend (React) - In Progress
+## ✅ Frontend (React) - In Progress
 
-### Charity Management
+### ✅ Charity Management
 
-1. Use `useCharityAccount` to display charity details:
+1. ✅ Use `useAccount` to display charity details:
    - `name`, `authority`, `paused` status, donation stats, recipient wallet (if set).
-2. Add action buttons for:
+2. ✅ Add action buttons for:
    - Pause / Unpause donations (`pauseDonations`).
-   - Set withdrawal recipient (`updateCharity`).
 
-### Donation Flow
+### ✅ Donation Flow
 
-1. Use `donate` to handle SOL.
-2. Validate input amount and token type.
-3. Display paused state and disable donation if applicable.
+1. ✅ Use `donate` to handle SOL.
+2. ✅ Validate input amount and token type.
+3. ✅ Display paused state and disable donation if applicable.
 
-### Withdraw Flow (For Authority)
+### ✅ Withdraw Flow (For Authority)
 
-1. Use `withdrawDonations` to withdraw funds to self or a custom recipient.
-2. Display available balances for both SOL.
+1. ✅ Use `withdrawDonations` to withdraw funds to self or a custom recipient.
+2. ✅ Display available balances for both SOL.
 
-### Charity Listings
+### ✅ Charity Listings
 
-1. Use `getAllCharities` to fetch and display all charities.
-2. Use `getMyCharities` to fetch and display charities owned by the current user.
+1. ✅ Use `getAllCharities` to fetch and display all charities.
+2. ✅ Use `getMyCharities` to fetch and display charities owned by the current user.
 
-### Donation History
+### ✅ Donation History
 
-1. Use `getMyDonations` to display the user's donation history.
-2. Use `useDonationAccount` to fetch and manage donation-specific data.
-
-### Statistics and Insights
-
-1. Use `useCharityStats` to display donation statistics and trends for charities.
+1. ✅ Use `getMyDonations` to display the user's donation history.
+2. ✅ Use `useDonationAccount` to fetch and manage donation-specific data.
 
 ---
 
@@ -158,10 +145,11 @@
 
 ### Devnet Deployment
 
-1. Deploy the smart contract to Devnet.
-2. Create a deployment script:
+1. ✅ Add pipeline scripts to build and test frontend and Anchor program.
+2. Deploy the smart contract to Devnet.
+3. ✅ Create a deployment script:
    - Use `anchor deploy` and upload the IDL.
-3. Store the program ID and IDL in the GitHub repository.
+4. Store the program ID and IDL in the GitHub repository.
 
 ---
 
@@ -173,5 +161,5 @@
 
 ### Program Constraints Cleanup
 
-1. Use `has_one`, `constraint`, and `seeds` consistently.
-2. Enforce authority and PDA ownership checks throughout the program.
+1. ✅ Use `has_one`, `constraint`, and `seeds` consistently.
+2. ✅ Enforce authority and PDA ownership checks throughout the program.
