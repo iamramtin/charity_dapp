@@ -42,6 +42,7 @@ describe("Charity Smart Contract Tests", () => {
   // Keypairs
   let authorityKeypair: Keypair;
   const donorKeypair = Keypair.generate();
+  const withdrawalRecipient = Keypair.generate();
 
   let connection: anchor.web3.Connection;
   let rentExemptBalance: number;
@@ -416,6 +417,31 @@ describe("Charity Smart Contract Tests", () => {
     }
   });
 
+  it("sets withdrawal recipient", async () => {
+    try {
+       // Set the withdrawal recipient
+       await charityProgram.methods
+        .setWithdrawalRecipient(withdrawalRecipient.publicKey)
+        .accounts({
+           authority: authorityKeypair.publicKey,
+           charity: charityPda,
+           recipient:  withdrawalRecipient.publicKey,
+        })
+        .rpc({ commitment: "confirmed" });
+        const updatedCharity = await charityProgram.account.charity.fetch(charityPda);
+        console.log("Updated recipient:", updatedCharity.recipient?.toString());
+
+        expect(updatedCharity.recipient).toBeDefined();
+        expect(updatedCharity.recipient?.toString()).toBe(withdrawalRecipient.publicKey.toString());
+        console.log("Withdrawal recipient set successfully", updatedCharity.recipient?.toString());
+
+    } catch (error: any) {
+      const message = `Set withdrawal recipient failed: ${error}`;
+      console.error(message);
+      throw new Error(message);
+    }
+  });
+
   it("withdraws donations from vault", async () => {
     try {
       // Set the clock to simulate blockchain time
@@ -429,7 +455,6 @@ describe("Charity Smart Contract Tests", () => {
           BigInt(charityWithdrawnAt)
         )
       );
-
       // Get the current state
       const charityBefore = await charityProgram.account.charity.fetch(
         charityPda
@@ -444,8 +469,6 @@ describe("Charity Smart Contract Tests", () => {
       );
       console.log("Rent exempt minimum:", rentExemptBalance);
 
-      const recipientKeypair = Keypair.generate();
-
       // Verify vault ownership
       expect(vaultAccountBefore?.owner.toString()).toBe(
         charityProgram.programId.toString()
@@ -455,7 +478,7 @@ describe("Charity Smart Contract Tests", () => {
         .withdrawDonations(validWithdrawAmount)
         .accounts({
           charity: charityPda,
-          recipient: recipientKeypair.publicKey,
+          recipient: withdrawalRecipient.publicKey,
         })
         .rpc({ commitment: "confirmed" });
 
@@ -474,7 +497,7 @@ describe("Charity Smart Contract Tests", () => {
 
       // Check recipient balance
       const recipientAccount = await context.banksClient.getAccount(
-        recipientKeypair.publicKey
+        withdrawalRecipient.publicKey
       );
 
       // Assertions - use difference in balances instead of absolute values
@@ -516,7 +539,7 @@ describe("Charity Smart Contract Tests", () => {
         .withdrawDonations(tooMuchAmount)
         .accounts({
           charity: charityPda,
-          recipient: Keypair.generate().publicKey,
+          recipient: withdrawalRecipient.publicKey,
         })
         .rpc({ commitment: "confirmed" });
 
@@ -541,7 +564,7 @@ describe("Charity Smart Contract Tests", () => {
         .withdrawDonations(withdrawTooMuch)
         .accounts({
           charity: charityPda,
-          recipient: Keypair.generate().publicKey,
+          recipient: withdrawalRecipient.publicKey,
         })
         .rpc({ commitment: "confirmed" });
 

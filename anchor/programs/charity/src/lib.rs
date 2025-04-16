@@ -41,6 +41,7 @@ pub mod charity {
             deleted_at: None,
             withdrawn_at: None,
             vault_bump: ctx.bumps.vault,
+            recipient: None,
         };
 
         // Ensure the vault PDA is owned by the program
@@ -203,11 +204,32 @@ pub mod charity {
         Ok(())
     }
 
+    pub fn set_withdrawal_recipient(ctx: Context<SetWithdrawalRecipient>, recipient: Option<Pubkey>) -> Result<()> {
+        let charity = &mut ctx.accounts.charity;
+
+        // If the recipient is None, use the authority as the default.
+        let recipient_to_set = recipient.unwrap_or(ctx.accounts.authority.key());
+        charity.recipient = Some(recipient_to_set);
+
+        emit!(SetWithdrawalRecipientEvent {
+          charity_key: charity.key(),
+          recipient_key: recipient_to_set,
+        });
+
+        Ok(())
+    }
+
     pub fn withdraw_donations(ctx: Context<WithdrawDonations>, amount: u64) -> Result<()> {
         let recipient = &mut ctx.accounts.recipient;
         let charity = &mut ctx.accounts.charity;
         let vault = &mut ctx.accounts.vault;
         let current_time = Clock::get()?.unix_timestamp;
+
+        // Check if a withdrawal recipient is set
+        if let Some(withdrawal_recipient) = charity.recipient {
+        // Ensure the provided recipient matches the stored recipient
+        require!(recipient.key() == withdrawal_recipient, ErrorCode::InvalidWithdrawalRecipient);
+        }
 
         let (expected_vault, _vault_bump) =
             Pubkey::find_program_address(&[b"vault", charity.key().as_ref()], ctx.program_id);
@@ -406,6 +428,21 @@ pub struct DonateSol<'info> {
 }
 
 #[derive(Accounts)]
+#[instruction(recipient: Pubkey)]
+pub struct SetWithdrawalRecipient<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [b"charity", authority.key().as_ref(), charity.name.as_bytes()],
+        bump,
+        has_one = authority,
+    )]
+    pub charity: Account<'info, Charity>,
+}
+
+#[derive(Accounts)]
 pub struct WithdrawDonations<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
@@ -455,6 +492,7 @@ pub struct Charity {
     pub deleted_at: Option<i64>, // When charity was deleted
     pub withdrawn_at: Option<i64>, // When donations were withdrawn
     pub vault_bump: u8,    // Reference to associated vault PDA
+    pub recipient: Option<Pubkey>, // Recipient of withdrawn donations
 }
 
 #[account]
@@ -499,6 +537,12 @@ pub enum ErrorCode {
 
     #[msg("Donations for this charity are paused")]
     DonationsPaused,
+
+    #[msg("Invalid withdrawal recipient")]
+    InvalidWithdrawalRecipient,
+
+    #[msg("Recipient already set")]
+    RecipientAlreadySet,
 }
 
 /**
@@ -526,6 +570,12 @@ pub struct DeleteCharityEvent {
     pub charity_name: String,
     pub deleted_at: i64,
     pub withdrawn_to_recipient: bool,
+}
+
+#[event]
+pub struct SetWithdrawalRecipientEvent {
+    pub charity_key: Pubkey,
+    pub recipient_key: Pubkey,
 }
 
 #[event]
