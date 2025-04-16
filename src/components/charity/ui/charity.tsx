@@ -1,5 +1,5 @@
 "use client";
-
+import { CharityBlink } from "../../ui/charity-blink";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useForm } from "react-hook-form";
@@ -559,6 +559,19 @@ export function CharityDetails({
           <DonationTable donations={donations} />
         )}
       </CharityCard>
+      {/* Charity Blink Sharing Section */}
+    {isAuthority && (
+      <CharityCard className="mt-6">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">
+          Share Your Charity
+        </h3>
+        <CharityBlink 
+          charityKey={charity.publicKey.toString()} 
+          charityName={charity.name}
+          baseUrl={typeof window !== 'undefined' ? window.location.origin : ''}
+        />
+      </CharityCard>
+    )}
     </div>
   );
 }
