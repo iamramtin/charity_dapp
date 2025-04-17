@@ -74,14 +74,20 @@ export function DonateForm({
   const amount = watch("amount");
   const lamports = amount ? Math.floor(amount * 1_000_000_000) : 0;
 
-  // Estimated transaction fee in lamports (0.000005 SOL)
-  const ESTIMATED_TX_FEE = 5000;
+  // Estimated transaction fee in lamports (0.00008 SOL)
+  const ESTIMATED_TX_FEE = 80000;
+
+  // Minimum donation is 0.001 plus estimated transaction fee
+  const minDonationInSol = Number(
+    ESTIMATED_TX_FEE / 1_000_000_000 + 0.001
+  ).toFixed(0);
 
   // Maximum donation is wallet balance minus estimated transaction fee
-  const maxDonationInSol =
+  const maxDonationInSol = Number(
     walletBalance !== null
       ? Math.max(0, (walletBalance - ESTIMATED_TX_FEE) / 1_000_000_000)
-      : 0;
+      : 0
+  ).toFixed(0);
 
   useEffect(() => {
     if (!publicKey || !connection) return;
@@ -99,7 +105,7 @@ export function DonateForm({
             0,
             (balance - ESTIMATED_TX_FEE) / 1_000_000_000
           );
-          setValue("amount", Number(maxAmount.toFixed(4)));
+          setValue("amount", Number(maxAmount));
         }
       } catch (err) {
         console.error("Error fetching wallet balance:", err);
@@ -139,7 +145,13 @@ export function DonateForm({
 
   const handleSetMaxAmount = () => {
     if (walletBalance !== null) {
-      setValue("amount", Number(maxDonationInSol.toFixed(4)));
+      setValue("amount", Number(maxDonationInSol));
+    }
+  };
+
+  const handleSetMinAmount = () => {
+    if (walletBalance !== null) {
+      setValue("amount", Number(minDonationInSol));
     }
   };
 
@@ -171,7 +183,7 @@ export function DonateForm({
             id="amount"
             type="number"
             step="0.001"
-            min="0.001"
+            min={minDonationInSol}
             max={maxDonationInSol || undefined}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.amount || error ? "border-red-500" : "border-gray-300"
@@ -179,7 +191,10 @@ export function DonateForm({
             placeholder="Enter amount in SOL"
             {...register("amount", {
               required: "Amount is required",
-              min: { value: 0.001, message: "Minimum donation is 0.001 SOL" },
+              min: {
+                value: minDonationInSol,
+                message: `Minimum donation is ${minDonationInSol}`,
+              },
               max: {
                 value: maxDonationInSol || 999999,
                 message: "Amount exceeds your balance",
@@ -212,14 +227,25 @@ export function DonateForm({
             lamports)
           </p>
 
-          <button
-            type="button"
-            className="text-blue-600 hover:text-blue-800"
-            onClick={handleSetMaxAmount}
-            disabled={isLoadingBalance || walletBalance === null}
-          >
-            Max
-          </button>
+          <div>
+            <button
+              type="button"
+              className="text-gray-600 hover:text-red-400 mr-2"
+              onClick={handleSetMinAmount}
+              disabled={isLoadingBalance || walletBalance === null}
+            >
+              Min
+            </button>
+
+            <button
+              type="button"
+              className="text-gray-800 hover:text-blue-400"
+              onClick={handleSetMaxAmount}
+              disabled={isLoadingBalance || walletBalance === null}
+            >
+              Max
+            </button>
+          </div>
         </div>
 
         {/* Transaction fee notice */}

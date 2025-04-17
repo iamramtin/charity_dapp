@@ -140,8 +140,8 @@ export function DonationTable({ donations }: { donations: any[] }) {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {donations
-            .slice()
-            .reverse()
+            .sort((a, b) => b.createdAt - a.createdAt) // Sort by createdAt, most recent first
+
             .map((donation) => (
               <tr key={donation.publicKey.toString()}>
                 <td className="px-6 py-4 text-sm text-gray-900">
