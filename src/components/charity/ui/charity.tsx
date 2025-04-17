@@ -413,7 +413,7 @@ export function CharityDetails({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           icon={<Icons.Users className="h-8 w-8 text-blue-500" />}
-          label="Total Donors"
+          label="Total Donations"
           value={charity?.donationCount.toString() || 0}
           isZero={charity?.donationCount == 0}
         />
