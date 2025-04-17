@@ -649,9 +649,6 @@ export type Charity = {
   "types": [
     {
       "name": "charity",
-      "docs": [
-        "* ACCOUNTS"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -708,9 +705,6 @@ export type Charity = {
     },
     {
       "name": "createCharityEvent",
-      "docs": [
-        "* EVENTS"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
