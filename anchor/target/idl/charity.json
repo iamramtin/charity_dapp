@@ -643,9 +643,6 @@
   "types": [
     {
       "name": "Charity",
-      "docs": [
-        "* ACCOUNTS"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -702,9 +699,6 @@
     },
     {
       "name": "CreateCharityEvent",
-      "docs": [
-        "* EVENTS"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
