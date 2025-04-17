@@ -47,7 +47,9 @@ if [[ "$UPDATE_CARGO" == true ]]; then
 fi
 
 log "Starting Anchor build process..."
-anchor build || { log "Anchor build failed"; exit 1; }
+
+# running with "--no idl" to bypass breaking change: https://github.com/solana-foundation/anchor/pull/3663
+anchor build --no-idl || { log "Anchor build failed"; exit 1; }
 
 SO_FILE="target/deploy/charity.so"
 DEST_DIR="tests/fixtures"
