@@ -265,6 +265,19 @@ pub mod charity {
             .ok_or(error!(CustomError::Overflow))?;
         charity.withdrawn_at = Some(current_time);
 
+        // We could also use CPI to transfer lamports:
+
+        // Import System Program functions:
+        // use anchor_lang::solana_program::{program::invoke_signed, system_instruction};
+
+        // let from_vault_pubkey = ctx.accounts.vault.to_account_info();
+        // let to_recipient_pubkey = ctx.accounts.recipient.to_account_info();
+        // let program_id = ctx.accounts.system_program.to_account_info();
+        // let seed = ctx.accounts.charity.key();
+        // let ix = &system_instruction::transfer(&from_vault_pubkey.key(), &to_recipient_pubkey.key(),amount);
+        // let vault_seeds: &[&[&[u8]]] = &[&[b"vault", seed.as_ref(), &[ctx.bumps.vault]]];
+        // invoke_signed(ix, &[from_vault_pubkey, to_recipient_pubkey, program_id], vault_seeds)?;
+
         emit!(WithdrawCharitySolEvent {
             charity_key: charity.key(),
             charity_name: charity.name.clone(),

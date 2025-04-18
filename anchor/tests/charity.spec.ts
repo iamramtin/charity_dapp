@@ -28,7 +28,7 @@ describe("Charity Smart Contract Tests", () => {
   const validDonationAmount = new anchor.BN(1_000_000_000); // 1 SOL in lamports
   const invalidDonationAmount = new anchor.BN(20_000_000_000); // 11 SOL in lamports
   const validWithdrawAmount = new anchor.BN(100_000_000); // 0.1 SOL in lamports
-  const inValidWithdrawAmount = validDonationAmount; // No longer rent-exempy
+  const inValidWithdrawAmount = validDonationAmount; // No longer rent-exempt
 
   // Derived addresses
   let charityPda: PublicKey;
