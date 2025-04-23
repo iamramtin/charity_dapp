@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Charity Platform Presentation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e2e;
+            color: #cdd6f4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #9945FF 0%, #8752F3 30%, #5497D5 60%, #14F195 100%);
+            height: 10px;
+            width: 100%;
+        }
+        
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .slide-container {
+            position: relative;
+            width: 800px;
+            height: 450px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: scale(0.95);
+        }
+        
+        .slide.active {
+            opacity: 1;
+            z-index: 10;
+            transform: scale(1);
+        }
+        
+        .slide.prev {
+            opacity: 0;
+            transform: translateX(-100%) scale(0.95);
+        }
+        
+        .slide.next {
+            opacity: 0;
+            transform: translateX(100%) scale(0.95);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 800px;
+            margin-top: 20px;
+        }
+        
+        .nav-button {
+            background-color: #313244;
+            color: #cdd6f4;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            background-color: #45475a;
+        }
+        
+        .nav-button:active {
+            transform: scale(0.98);
+        }
+        
+        .slide-indicator {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #45475a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #45475a;
+        }
+        
+        .dot.active {
+            background-color: #cba6f7;
+            border-color: #ffffff;
+        }
+        
+        .slide-title {
+            display: none;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        .slide-title.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="header"></div>
+    <div class="container">
+        <h1 class="slide-title active">Title Slide</h1>
+        <div class="slide-container">
+            <!-- Slides will be loaded here via JavaScript -->
+        </div>
+        <div class="controls">
+            <button class="nav-button prev-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+                Previous
+            </button>
+            <div class="slide-indicator">
+                <!-- Dots will be created here via JavaScript -->
+            </div>
+            <button class="nav-button next-btn">
+                Next
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Slide data
+            const slides = [
+                {
+                    title: "Title",
+                    svg: "slide-1-title.svg"
+                },
+                {
+                    title: "App Overview",
+                    svg: "slide-2-overview.svg"
+                },
+                {
+                    title: "Creating a Charity",
+                    svg: "slide-3-create-charity.svg"
+                },
+                {
+                    title: "Making a Donation",
+                    svg: "slide-4-donation.svg"
+                },
+                {
+                    title: "Charity Management",
+                    svg: "slide-5-charity-management.svg"
+                },
+                {
+                    title: "Key Benefits",
+                    svg: "slide-6-key-benefits.svg"
+                }
+            ];
+            
+            const slideContainer = document.querySelector('.slide-container');
+            const slideIndicator = document.querySelector('.slide-indicator');
+            const slideTitles = document.querySelectorAll('.slide-title');
+            const slideTitle = document.querySelector('.slide-title');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            
+            let currentSlide = 0;
+            
+            // Create slides
+            slides.forEach((slide, index) => {
+                const slideElement = document.createElement('div');
+                slideElement.className = `slide ${index === 0 ? 'active' : index === 1 ? 'next' : ''}`;
+                slideElement.innerHTML = `<object data="${slide.svg}" type="image/svg+xml" width="100%" height="100%"></object>`;
+                slideContainer.appendChild(slideElement);
+                
+                // Create dot indicator
+                const dot = document.createElement('div');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => goToSlide(index));
+                slideIndicator.appendChild(dot);
+            });
+            
+            // Update active slide title
+            slideTitle.textContent = slides[0].title;
+            
+            // Navigation functions
+            function updateSlides() {
+                const slideElements = document.querySelectorAll('.slide');
+                const dots = document.querySelectorAll('.dot');
+                
+                slideElements.forEach((slide, index) => {
+                    slide.className = 'slide';
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else if (index === currentSlide - 1 || (currentSlide === 0 && index === slides.length - 1)) {
+                        slide.classList.add('prev');
+                    } else if (index === currentSlide + 1 || (currentSlide === slides.length - 1 && index === 0)) {
+                        slide.classList.add('next');
+                    }
+                });
+                
+                dots.forEach((dot, index) => {
+                    dot.className = index === currentSlide ? 'dot active' : 'dot';
+                });
+                
+                slideTitle.textContent = slides[currentSlide].title;
+                
+                // Animate the title with a quick reset
+                slideTitle.classList.remove('active');
+                setTimeout(() => {
+                    slideTitle.classList.add('active');
+                }, 50);
+            }
+            
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                updateSlides();
+            }
+            
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                updateSlides();
+            }
+            
+            function goToSlide(index) {
+                currentSlide = index;
+                updateSlides();
+            }
+            
+            // Event listeners
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

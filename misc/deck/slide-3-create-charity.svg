@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="450" fill="#1e1e2e" rx="0" ry="0" />
+  
+  <!-- Solana gradient accent -->
+  <rect x="0" y="0" width="800" height="10" fill="url(#solanaGradient)" />
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="solanaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9945FF" />
+      <stop offset="30%" style="stop-color:#8752F3" />
+      <stop offset="60%" style="stop-color:#5497D5" />
+      <stop offset="100%" style="stop-color:#14F195" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Title -->
+  <text x="400" y="60" font-family="Arial" font-size="32" font-weight="bold" text-anchor="middle" fill="#ffffff">Creating a Charity</text>
+  
+  <!-- Demo Timeline -->
+  <rect x="100" y="90" width="600" height="10" fill="#45475a" rx="5" ry="5" />
+  <circle cx="160" cy="95" r="10" fill="#cba6f7" stroke="#ffffff" stroke-width="2" />
+  <circle cx="320" cy="95" r="8" fill="#45475a" stroke="#cdd6f4" stroke-width="2" />
+  <circle cx="480" cy="95" r="8" fill="#45475a" stroke="#cdd6f4" stroke-width="2" />
+  <circle cx="640" cy="95" r="8" fill="#45475a" stroke="#cdd6f4" stroke-width="2" />
+  
+  <text x="160" y="75" font-family="Arial" font-size="12" text-anchor="middle" fill="#cdd6f4">Create</text>
+  <text x="320" y="75" font-family="Arial" font-size="12" text-anchor="middle" fill="#cdd6f4">Donate</text>
+  <text x="480" y="75" font-family="Arial" font-size="12" text-anchor="middle" fill="#cdd6f4">Manage</text>
+  <text x="640" y="75" font-family="Arial" font-size="12" text-anchor="middle" fill="#cdd6f4">Benefits</text>
+  
+  <!-- Create Charity Form -->
+  <rect x="150" y="130" width="500" height="220" fill="#313244" rx="10" ry="10" stroke="#cba6f7" stroke-width="2" />
+  
+  <text x="400" y="160" font-family="Arial" font-size="20" font-weight="bold" text-anchor="middle" fill="#ffffff">Create New Charity</text>
+  
+  <text x="180" y="195" font-family="Arial" font-size="14" fill="#cdd6f4">Charity Name</text>
+  <rect x="180" y="205" width="440" height="35" fill="#45475a" rx="5" ry="5" />
+  <text x="195" y="228" font-family="Arial" font-size="14" fill="#ffffff">Dev Scholarship Fund</text>
+  
+  <text x="180" y="260" font-family="Arial" font-size="14" fill="#cdd6f4">Description</text>
+  <rect x="180" y="270" width="440" height="35" fill="#45475a" rx="5" ry="5" />
+  <text x="195" y="293" font-family="Arial" font-size="14" fill="#ffffff">Supporting new Solana developers</text>
+  
+  <rect x="320" y="320" width="160" height="40" fill="#cba6f7" rx="20" ry="20" />
+  <text x="400" y="345" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#1e1e2e">Create Charity</text>
+  
+  <!-- Blockchain explanation -->
+  <rect x="50" y="370" width="700" height="60" fill="#45475a" rx="5" ry="5" />
+  <text x="400" y="395" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">"Behind the scenes, this creates a dedicated account on the Solana blockchain</text>
+  <text x="400" y="415" font-family="Arial" font-size="14" text-anchor="middle" fill="#ffffff">that stores our charity information and a separate vault account to hold funds."</text>
+</svg>
