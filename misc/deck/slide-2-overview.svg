@@ -25,7 +25,7 @@
   <!-- App illustration -->
   <rect x="70" y="110" width="320" height="200" fill="#313244" rx="5" ry="5" stroke="#cba6f7" stroke-width="2" />
   <rect x="70" y="110" width="320" height="40" fill="#6c7086" rx="5" ry="5" />
-  <text x="90" y="136" font-family="Arial" font-size="16" font-weight="bold" fill="#ffffff">Solana Charity Platform</text>
+  <text x="90" y="136" font-family="Arial" font-size="16" font-weight="bold" fill="#ffffff">Charity DApp</text>
   <circle cx="360" cy="130" r="12" fill="#a6e3a1" />
   <text x="360" y="135" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#1e1e2e">$</text>
   

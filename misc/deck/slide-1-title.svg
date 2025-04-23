@@ -21,7 +21,7 @@
   </defs>
   
   <!-- Title -->
-  <text x="400" y="180" font-family="Arial" font-size="48" font-weight="bold" text-anchor="middle" fill="url(#titleGradient)">Solana Charity Platform</text>
+  <text x="400" y="180" font-family="Arial" font-size="48" font-weight="bold" text-anchor="middle" fill="url(#titleGradient)">Charity DApp</text>
   
   <!-- Subtitle -->
   <text x="400" y="240" font-family="Arial" font-size="24" text-anchor="middle" fill="#cfd9df">Transparent Fundraising with Blockchain</text>
@@ -31,6 +31,6 @@
   <path d="M380,100 L390,90 L420,120 L390,110 Z M380,100 L390,110 L420,80 L390,90 Z" fill="white" />
   
   <!-- Presenter info -->
-  <text x="400" y="380" font-family="Arial" font-size="18" text-anchor="middle" fill="#a6adc8">Solana Bootcamp Presentation</text>
-  <text x="400" y="410" font-family="Arial" font-size="16" text-anchor="middle" fill="#a6adc8">April 2025</text>
+  <text x="400" y="380" font-family="Arial" font-size="18" text-anchor="middle" fill="#a6adc8">Solana Rust Bootcamp</text>
+  <text x="400" y="410" font-family="Arial" font-size="16" text-anchor="middle" fill="#a6adc8">Q1 2025</text>
 </svg>
