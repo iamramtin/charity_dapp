@@ -2,6 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 use crate::state::*;
+use crate::common::errors::CustomError;
+use crate::common::events::MakeDonationEvent;
 
 #[derive(Accounts)]
 pub struct DonateUsdc<'info> {
@@ -23,7 +25,7 @@ pub struct DonateUsdc<'info> {
     #[account(
         init,
         payer = donor,
-        space = Donation::DISCRIMINATOR.len() + Donation::INIT_SPACE,
+        space = Donation::INIT_SPACE,
         seeds = [b"donation", donor.key().as_ref(), charity.key().as_ref(), &charity.donation_count.to_le_bytes()],
         bump
     )]
@@ -36,7 +38,7 @@ pub struct DonateUsdc<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn handler(ctx: Context<DonateUsdc>, amount: u64) -> Result<()> {
+pub fn donate_usdc(ctx: Context<DonateUsdc>, amount: u64) -> Result<()> {
     let donor = &mut ctx.accounts.donor;
     let charity = &mut ctx.accounts.charity;
     let vault = &mut ctx.accounts.vault;

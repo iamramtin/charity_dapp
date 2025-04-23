@@ -10,7 +10,7 @@ pub mod state;
 
 use crate::common::*;
 use crate::instructions::*;
-use crate::state::Charity;
+use crate::state::*;
 
 declare_id!("9MipEJLetsngpXJuyCLsSu3qTJrHQ6E6W1rZ1GrG68am");
 

@@ -21,3 +21,7 @@ pub struct Charity {
     pub vault_bump: u8,    // Reference to associated vault PDA
     pub usdc_mint: Pubkey, // USDC mint address
 }
+
+impl Charity {
+    pub const INIT_SPACE: usize = 32 + CHARITY_NAME_MAX_LEN + CHARITY_DESCRIPTION_MAX_LEN + 8 + 8 + 8 + 1 + 8 + 8 + 8 + 8 + 1 + 32;
+}

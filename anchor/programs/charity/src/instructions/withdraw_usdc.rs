@@ -2,6 +2,8 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 use crate::state::Charity;
+use crate::common::errors::CustomError;
+use crate::common::events::WithdrawCharityUsdcEvent;
 
 #[derive(Accounts)]
 pub struct WithdrawUsdc<'info> {
@@ -28,7 +30,7 @@ pub struct WithdrawUsdc<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn handler(ctx: Context<WithdrawUsdc>, amount: u64) -> Result<()> {
+pub fn withdraw_usdc(ctx: Context<WithdrawUsdc>, amount: u64) -> Result<()> {
     let recipient = &mut ctx.accounts.recipient;
     let charity = &mut ctx.accounts.charity;
     let vault = &mut ctx.accounts.vault;
