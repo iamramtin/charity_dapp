@@ -2,6 +2,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::system_instruction;
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 pub mod common;
 pub mod instructions;
@@ -15,7 +16,6 @@ declare_id!("9MipEJLetsngpXJuyCLsSu3qTJrHQ6E6W1rZ1GrG68am");
 
 #[program]
 pub mod charity {
-
     use super::*;
 
     pub fn create_charity(
@@ -39,7 +39,8 @@ pub mod charity {
             authority: ctx.accounts.authority.key(),
             name,
             description,
-            donations_in_lamports: 0,
+            sol_donations_in_lamports: 0,
+            usdc_donations: 0,
             donation_count: 0,
             paused: false,
             created_at: current_time,
@@ -47,6 +48,7 @@ pub mod charity {
             deleted_at: None,
             withdrawn_at: None,
             vault_bump: ctx.bumps.vault,
+            usdc_mint: ctx.accounts.usdc_mint.key(),
         };
 
         // Ensure the vault PDA is owned by the program
@@ -194,8 +196,8 @@ pub mod charity {
             .checked_add(1)
             .ok_or(error!(CustomError::Overflow))?;
 
-        charity.donations_in_lamports = charity
-            .donations_in_lamports
+        charity.sol_donations_in_lamports = charity
+            .sol_donations_in_lamports
             .checked_add(amount)
             .ok_or(error!(CustomError::Overflow))?;
 
@@ -203,7 +205,63 @@ pub mod charity {
         donation.donor_key = donor.key();
         donation.charity_key = charity.key();
         donation.charity_name = charity.name.clone();
-        donation.amount_in_lamports = amount;
+        donation.amount = amount;
+        donation.token_type = TokenType::Sol;
+        donation.created_at = current_time;
+
+        emit!(MakeDonationEvent {
+            donor_key: donor.key(),
+            charity_key: charity.key(),
+            charity_name: charity.name.clone(),
+            amount,
+            created_at: current_time,
+        });
+
+        Ok(())
+    }
+
+    pub fn donate_usdc(ctx: Context<DonateUsdc>, amount: u64) -> Result<()> {
+        let donor = &mut ctx.accounts.donor;
+        let charity = &mut ctx.accounts.charity;
+        let vault = &mut ctx.accounts.vault;
+        let donation = &mut ctx.accounts.donation;
+        let donor_token_account = &mut ctx.accounts.donor_token_account;
+        let current_time = Clock::get()?.unix_timestamp;
+
+        // Check that donations are not paused
+        require!(!charity.paused, CustomError::DonationsPaused);
+
+        // Transfer USDC from donor to vault
+        let cpi_accounts = Transfer {
+            from: donor_token_account.to_account_info(),
+            to: vault.to_account_info(),
+            authority: donor.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            cpi_accounts,
+        );
+
+        token::transfer(cpi_ctx, amount)?;
+
+        // Update charity state
+        charity.donation_count = charity
+            .donation_count
+            .checked_add(1)
+            .ok_or(error!(CustomError::Overflow))?;
+
+        charity.usdc_donations = charity
+            .usdc_donations
+            .checked_add(amount)
+            .ok_or(error!(CustomError::Overflow))?;
+
+        // Record donation history
+        donation.donor_key = donor.key();
+        donation.charity_key = charity.key();
+        donation.charity_name = charity.name.clone();
+        donation.amount = amount;
+        donation.token_type = TokenType::Usdc;
         donation.created_at = current_time;
 
         emit!(MakeDonationEvent {
@@ -248,10 +306,6 @@ pub mod charity {
         );
 
         // Transfer lamports from vault to recipient via direct lamport manipulation
-        // - Program-owned accounts cannot use the System Program's transfer instruction directly to send lamports.
-        // - Instead, we modify the lamport balances directly.
-        // - The program has authority to modify the lamport balances of accounts it owns.
-        // - Total sum of lamports must remain the same before and after a transaction.
         **vault.lamports.borrow_mut() = vault_balance.checked_sub(amount).unwrap();
         **recipient.lamports.borrow_mut() = recipient
             .lamports()
@@ -259,8 +313,8 @@ pub mod charity {
             .ok_or(error!(CustomError::Overflow))?;
 
         // Update charity state
-        charity.donations_in_lamports = charity
-            .donations_in_lamports
+        charity.sol_donations_in_lamports = charity
+            .sol_donations_in_lamports
             .checked_sub(amount)
             .ok_or(error!(CustomError::Overflow))?;
         charity.withdrawn_at = Some(current_time);
@@ -268,7 +322,52 @@ pub mod charity {
         emit!(WithdrawCharitySolEvent {
             charity_key: charity.key(),
             charity_name: charity.name.clone(),
-            donations_in_lamports: charity.donations_in_lamports,
+            sol_donations_in_lamports: charity.sol_donations_in_lamports,
+            donation_count: charity.donation_count,
+            withdrawn_at: current_time,
+        });
+
+        Ok(())
+    }
+
+    pub fn withdraw_usdc(ctx: Context<WithdrawUsdc>, amount: u64) -> Result<()> {
+        let recipient = &mut ctx.accounts.recipient;
+        let charity = &mut ctx.accounts.charity;
+        let vault = &mut ctx.accounts.vault;
+        let current_time = Clock::get()?.unix_timestamp;
+
+        // Ensure there are enough USDC to withdraw
+        let vault_balance = vault.amount;
+        require!(
+            amount > 0 && vault_balance >= amount,
+            CustomError::InsufficientFunds
+        );
+
+        // Transfer USDC from vault to recipient
+        let cpi_accounts = Transfer {
+            from: vault.to_account_info(),
+            to: recipient.to_account_info(),
+            authority: ctx.accounts.authority.to_account_info(),
+        };
+
+        let cpi_ctx = CpiContext::new(
+            ctx.accounts.token_program.to_account_info(),
+            cpi_accounts,
+        );
+
+        token::transfer(cpi_ctx, amount)?;
+
+        // Update charity state
+        charity.usdc_donations = charity
+            .usdc_donations
+            .checked_sub(amount)
+            .ok_or(error!(CustomError::Overflow))?;
+        charity.withdrawn_at = Some(current_time);
+
+        emit!(WithdrawCharityUsdcEvent {
+            charity_key: charity.key(),
+            charity_name: charity.name.clone(),
+            usdc_donations: charity.usdc_donations,
             donation_count: charity.donation_count,
             withdrawn_at: current_time,
         });

@@ -28,7 +28,16 @@ pub struct DeleteCharityEvent {
 pub struct WithdrawCharitySolEvent {
     pub charity_key: Pubkey,
     pub charity_name: String,
-    pub donations_in_lamports: u64,
+    pub sol_donations_in_lamports: u64,
+    pub donation_count: u64,
+    pub withdrawn_at: i64,
+}
+
+#[event]
+pub struct WithdrawCharityUsdcEvent {
+    pub charity_key: Pubkey,
+    pub charity_name: String,
+    pub usdc_donations: u64,
     pub donation_count: u64,
     pub withdrawn_at: i64,
 }
