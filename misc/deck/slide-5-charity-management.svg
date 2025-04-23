@@ -57,17 +57,18 @@
   <text x="200" y="305" font-family="Arial" font-size="14" fill="#ffffff">Recipient: F6JY1ceCPu...12xVK3ZYC</text>
   
   <!-- Icon indicators for admin functions -->
+  <!-- rect x="150" y="375" width="280" height="75" fill="#45475a" rx="5" ry="5" /-->
   <circle cx="170" y="340" r="10" fill="#f38ba8" />
-  <text x="170" y="345" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">⏸</text>
-  <text x="190" y="345" font-family="Arial" font-size="14" fill="#cdd6f4">Control donation acceptance</text>
+  <text x="170" y="370" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">⏸</text>
+  <text x="190" y="370" font-family="Arial" font-size="14" fill="#cdd6f4">Control donation acceptance</text>
   
   <circle cx="170" y="370" r="10" fill="#f9e2af" />
-  <text x="170" y="375" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">✏️</text>
-  <text x="190" y="375" font-family="Arial" font-size="14" fill="#cdd6f4">Update charity information</text>
+  <text x="170" y="400" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">✏️</text>
+  <text x="190" y="400" font-family="Arial" font-size="14" fill="#cdd6f4">Update charity information</text>
   
   <circle cx="170" y="400" r="10" fill="#a6e3a1" />
-  <text x="170" y="405" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">💰</text>
-  <text x="190" y="405" font-family="Arial" font-size="14" fill="#cdd6f4">Transfer funds to designated address</text>
+  <text x="170" y="430" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1e1e2e">💰</text>
+  <text x="190" y="430" font-family="Arial" font-size="14" fill="#cdd6f4">Transfer funds to designated address</text>
   
   <!-- Security note -->
   <rect x="550" y="355" width="200" height="75" fill="#45475a" rx="5" ry="5" />
